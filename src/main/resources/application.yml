@@ -1,0 +1,39 @@
+server:
+  port: 8081
+spring:
+  datasource:
+    name: test
+    url: jdbc:mysql://localhost:3306/fancier_test?useUnicode=true&characterEncoding=UTF-8&useSSL=true
+    username: root
+    password: 123456
+    #使用druid数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    filters: stat
+    maxActive: 20
+    initialSize: 1
+    maxWait: 60000
+    minIdle: 1
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: 20
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/fancier_mongo_test
+#  thymeleaf:
+#    prefix: classpath:/templates/
+#    suffix: .html
+#    cache: false
+#    servlet:
+#      content-type: text/html
+#    mode: HTML5
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*.xml
+  type-aliases-package: com.zetta.fancier.getdata.entity
+  configuration:
+    map-underscore-to-camel-case: true

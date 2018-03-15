@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zetta.fancier.getdata.dao.DataSetFieldDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zetta.fancier.getdata.entity.DataSetField">
+        <id column="id" property="id"/>
+        <result column="set_id" property="setId"/>
+        <result column="field_id" property="fieldId"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, set_id AS setId, field_id AS fieldId, status, remark
+    </sql>
+
+</mapper>

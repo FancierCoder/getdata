@@ -1,5 +1,7 @@
 package com.zetta.fancier.getdata.service;
 
+import com.alibaba.fastjson.JSONObject;
+import com.zetta.fancier.getdata.entity.RShuLie;
 import com.zetta.fancier.getdata.entity.ShuLie;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,13 +47,13 @@ public interface MongoDbService {
      */
     void deleteAll();
 
-    /**
-     * 修改
-     * <br>------------------------------<br>
-     *
-     * @param ShuLie
-     */
-    void updateById(ShuLie ShuLie);
+//    /**
+////     * 修改
+////     * <br>------------------------------<br>
+////     *
+////     * @param ShuLie
+////     */
+////    void updateById(ShuLie ShuLie);
 
     /**
      * 更新多条
@@ -72,6 +74,15 @@ public interface MongoDbService {
     ShuLie findById(String id);
 
     /**
+     * 根据条件查询出来后 在去修改
+     * <br>------------------------------<br>
+     *
+     * @param criteriaShuLie 查询条件
+     * @return
+     */
+    List<ShuLie> findByCondition(ShuLie criteriaShuLie);
+
+    /**
      * 查询全部
      * <br>------------------------------<br>
      *
@@ -88,7 +99,7 @@ public interface MongoDbService {
      * @param limit
      * @return
      */
-    List<ShuLie> find(ShuLie criteriaShuLie, int skip, int limit);
+    List<RShuLie> findByConditionAndOrderBy(ShuLie criteriaShuLie, Integer skip, Integer limit, JSONObject sortSet);
 
     /**
      * 根据条件查询出来后 在去修改

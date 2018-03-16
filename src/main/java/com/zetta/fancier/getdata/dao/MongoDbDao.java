@@ -1,5 +1,7 @@
 package com.zetta.fancier.getdata.dao;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.zetta.fancier.getdata.entity.ShuLie;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,13 +46,13 @@ public interface MongoDbDao {
      */
     void deleteAll();
 
-    /**
-     * 修改
-     * <br>------------------------------<br>
-     *
-     * @param ShuLie
-     */
-    void updateById(ShuLie ShuLie);
+//    /**
+//     * 修改
+//     * <br>------------------------------<br>
+//     *
+//     * @param ShuLie
+//     */
+//    void updateById(ShuLie ShuLie);
 
     /**
      * 更新多条
@@ -94,9 +96,28 @@ public interface MongoDbDao {
      * <br>------------------------------<br>
      *
      * @param criteriaShuLie 查询条件
+     * @return
+     */
+
+    /**
+     * 根据条件查询出来后 在去修改
+     * <br>------------------------------<br>
+     *
+     * @param criteriaShuLie 查询条件
+     * @return
+     */
+    List<ShuLie> findByCondition(ShuLie criteriaShuLie);
+
+    /**
+     * 根据条件查询出来后 在去修改
+     * <br>------------------------------<br>
+     *
+     * @param criteriaShuLie 查询条件
      * @param updateShuLie   修改的值对象
      * @return
      */
+
+
     ShuLie findAndModify(ShuLie criteriaShuLie, ShuLie updateShuLie);
 
     /**
@@ -116,4 +137,12 @@ public interface MongoDbDao {
      * @return
      */
     long count(ShuLie criteriaShuLie);
+
+    /**
+     * 根据条件查询出来后 在去修改
+     * <br>------------------------------<br>
+     *
+     * @return
+     */
+    List<ShuLie> findByConditionAndOrderBy(ShuLie criteriaShuLie, Integer skip, Integer limit, JSONObject sortSet);
 }

@@ -1,6 +1,8 @@
 server:
   port: 8081
 spring:
+  application:
+    name: getData
   datasource:
     name: test
     url: jdbc:mysql://localhost:3306/fancier_test?useUnicode=true&characterEncoding=UTF-8&useSSL=true

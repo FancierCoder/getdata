@@ -194,7 +194,7 @@ public class GetExcelInfo {
                 }
                 dataSet.setDataSource(getRightTypeCell(cell).toString());
             }
-            String token = UUID.randomUUID().toString();
+            String token = UUID.randomUUID().toString().replaceAll("-", "");
             ArrayList<ShuLie> shuLies = new ArrayList<>();
             for (int j = 10; j < totalRowNum - 1; j++) {//提取后面全部行的信息
                 Row row = sheet.getRow(j);

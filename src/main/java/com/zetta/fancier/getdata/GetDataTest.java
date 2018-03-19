@@ -88,7 +88,7 @@ public class GetDataTest {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    RestResponse<List<RShuLie>> response = ldDataSetController.queryDataSet(queryData);
+                    RestResponse<List<RShuLie>> response = ldDataSetController.queryDataSet(queryData.getToken(), queryData.getSetType(), queryData.getStartRow(), queryData.getPageSize(), queryData.getSortSet());
                     List<RShuLie> result = response.getResult();
                     System.out.println(result.size());
                 }

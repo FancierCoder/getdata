@@ -8,9 +8,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 
-@ApiModel(value = "QueryData", description="QueryData描述")
+@ApiModel(value = "RequestData", description="QueryData描述")
 @Valid
-public class QueryData {
+public class RequestData {
 
     @ApiModelProperty(value = "token信息", required = true)
     @NotNull
@@ -71,7 +71,7 @@ public class QueryData {
 
     @Override
     public String toString() {
-        return "QueryData{" +
+        return "RequestData{" +
                 "token='" + token + '\'' +
                 ", setType=" + setType +
                 ", startRow=" + startRow +

@@ -8,7 +8,7 @@ import com.zettayun.entity.RShuLie;
 import com.zettayun.entity.ShuLie;
 import com.zettayun.job.JobControl;
 import com.zettayun.method.GetExcelInfo;
-import com.zettayun.requestParamEntity.QueryData;
+import com.zettayun.requestParamEntity.RequestData;
 import com.zettayun.service.MongoDbService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,10 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -78,7 +75,7 @@ public class GetDataTest {
 
     @Test
     public void test6(){
-        QueryData queryData = new QueryData();
+        RequestData queryData = new RequestData();
         queryData.setToken("479ea6da-8a78-471d-8051-73e449de68b3");
         queryData.setSetType(1);
         queryData.setStartRow(0);
@@ -93,5 +90,14 @@ public class GetDataTest {
                 }
             }).start();
         }
+    }
+
+    @Test
+    public void test7(){
+        boolean flag = mongoDbService.createCollection("test");
+        ArrayList<String> list = new ArrayList<>();
+        list.add("token");
+        boolean test = mongoDbService.createIndex("test", list);
+
     }
 }

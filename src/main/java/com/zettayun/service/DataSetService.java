@@ -15,4 +15,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface DataSetService extends IService<DataSet> {
 
+    DataSet selectByToken(String token);
 }

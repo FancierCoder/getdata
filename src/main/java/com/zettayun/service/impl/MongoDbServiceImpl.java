@@ -103,4 +103,19 @@ public class MongoDbServiceImpl implements MongoDbService {
     public long count(ShuLie criteriaShuLie) {
         return mongoDao.count(criteriaShuLie);
     }
+
+    @Override
+    public boolean isExistCollection(String collectionName) {
+        return mongoDao.isExistCollection(collectionName);
+    }
+
+    @Override
+    public boolean createCollection(String collectionName) {
+        return mongoDao.createCollection(collectionName);
+    }
+
+    @Override
+    public boolean createIndex(String collectionName, List<String> filedNames) {
+        return mongoDao.createIndex(collectionName, filedNames);
+    }
 }

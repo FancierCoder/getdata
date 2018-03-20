@@ -14,4 +14,5 @@ import com.zettayun.entity.DataSet;
 
 public interface DataSetDao extends BaseMapper<DataSet> {
 
+    DataSet selectByToken(String token);
 }

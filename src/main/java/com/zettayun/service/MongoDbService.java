@@ -136,4 +136,26 @@ public interface MongoDbService {
      * @return
      */
     long count(ShuLie criteriaShuLie);
+
+    /**
+     * 是否存在collection
+     * @param collectionName
+     * @return
+     */
+    boolean isExistCollection(String collectionName);
+
+    /**
+     * 创建collection
+     * @param collectionName
+     * @return
+     */
+    boolean createCollection(String collectionName);
+
+    /**
+     * 创建Index
+     * @param collectionName
+     * @param filedNames
+     * @return
+     */
+    boolean createIndex(String collectionName ,List<String> filedNames);
 }

@@ -5,6 +5,7 @@ import com.zettayun.entity.ShuLie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.index.TextIndexDefinition;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -134,6 +135,35 @@ public class MongoDbDaoImpl implements MongoDbDao {
         query.skip(skip);
         query.limit(limit);
         return mongoTemplate.find(query, ShuLie.class, "shulie");
+    }
+
+    public boolean isExistCollection(String collectionName){
+        return mongoTemplate.collectionExists(collectionName);
+    }
+
+
+    public boolean createCollection(String collectionName){
+        try {
+            mongoTemplate.createCollection(collectionName);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean createIndex(String collectionName ,List<String> filedNames){
+        try {
+            TextIndexDefinition index = TextIndexDefinition.builder().build();
+            for (String filedName : filedNames) {
+                TextIndexDefinition.TextIndexedFieldSpec fieldSpec = new TextIndexDefinition.TextIndexedFieldSpec(filedName);
+                index.addFieldSpec(fieldSpec);
+            }
+            String s = mongoTemplate.indexOps(collectionName).ensureIndex(index);
+            System.out.println(s);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 
     private Query getQuery(ShuLie mongoDemo) {

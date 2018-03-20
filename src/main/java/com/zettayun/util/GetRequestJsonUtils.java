@@ -1,7 +1,7 @@
 package com.zettayun.util;
 
 import com.alibaba.fastjson.JSONObject;
-import com.zettayun.requestParamEntity.QueryData;
+import com.zettayun.requestParamEntity.RequestData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,9 +21,9 @@ public class GetRequestJsonUtils {
 
     private final static Logger logger = LoggerFactory.getLogger(GetRequestJsonUtils.class);
 
-    public static QueryData getParameterMap(HttpServletRequest request) {
+    public static RequestData getParameterMap(HttpServletRequest request) {
         Map map = request.getParameterMap();
-        QueryData queryData = new QueryData();
+        RequestData requestData = new RequestData();
         if (map != null) {
             Set set = map.entrySet();
             Iterator iterator = set.iterator();
@@ -40,23 +40,23 @@ public class GetRequestJsonUtils {
                         logger.info("==B==entry的value: " + values[i]);
                         //key += "="+values[i];
                         if ("token".equals(key)){
-                            queryData.setToken(values[i]);
+                            requestData.setToken(values[i]);
                             break;
                         }
                         if ("setType".equals(key)) {
-                            queryData.setSetType(Integer.parseInt(values[i]));
+                            requestData.setSetType(Integer.parseInt(values[i]));
                             break;
                         }
                         if ("startRow".equals(key)) {
-                            queryData.setStartRow(Integer.parseInt(values[i]));
+                            requestData.setStartRow(Integer.parseInt(values[i]));
                             break;
                         }
                         if ("pageSize".equals(key)) {
-                            queryData.setPageSize(Integer.parseInt(values[i]));
+                            requestData.setPageSize(Integer.parseInt(values[i]));
                             break;
                         }
                         if ("sortSet".equals(key)) {
-                            queryData.setSortSet(JSONObject.parseObject(values[i]));
+                            requestData.setSortSet(JSONObject.parseObject(values[i]));
                             break;
                         }
                     }
@@ -69,6 +69,6 @@ public class GetRequestJsonUtils {
                 }
             }
         }
-        return queryData;
+        return requestData;
     }
 }

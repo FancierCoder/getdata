@@ -25,5 +25,8 @@
         last_update_time AS lastUpdateTime, last_insert_time AS lastInsertTime, token, period, status, value_unit AS
         valueUnit, remark, set_type AS setType
     </sql>
+    <select id="selectByToken" resultType="com.zettayun.entity.DataSet">
+        SELECT * FROM test_zettayunee.data_set WHERE token = #{token}
+    </select>
 
 </mapper>

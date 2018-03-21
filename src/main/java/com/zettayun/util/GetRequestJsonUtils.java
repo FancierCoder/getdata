@@ -1,7 +1,7 @@
 package com.zettayun.util;
 
 import com.alibaba.fastjson.JSONObject;
-import com.zettayun.requestParamEntity.RequestData;
+import com.zettayun.api.requestParamEntity.RequestData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

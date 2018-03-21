@@ -1,13 +1,16 @@
 package com.zettayun.api.apiImpl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.zettayun.api.DataSetApi;
+import com.zettayun.api.requestParamEntity.RequestGetElectProCon;
+import com.zettayun.api.responseParamEntity.ResponseRow;
 import com.zettayun.entity.DataSet;
 import com.zettayun.entity.RShuLie;
 import com.zettayun.entity.ShuLie;
-import com.zettayun.requestParamEntity.RequestCreateCollection;
-import com.zettayun.requestParamEntity.RequestDataSet;
-import com.zettayun.requestParamEntity.RequestValue;
+import com.zettayun.api.requestParamEntity.RequestCreateCollection;
+import com.zettayun.api.requestParamEntity.RequestDataSet;
+import com.zettayun.api.requestParamEntity.RequestValue;
 import com.zettayun.service.DataSetService;
 import com.zettayun.service.MongoDbService;
 import org.springframework.stereotype.Repository;
@@ -152,6 +155,19 @@ public class DataSetApiImpl implements DataSetApi {
             return token;
         }
         return null;
+    }
+
+    @Override
+    public List<ResponseRow> getElectProCon(List<RequestGetElectProCon> request) {
+        ArrayList<ResponseRow> rows = new ArrayList<>();
+        for (RequestGetElectProCon electProCon : request){
+            EntityWrapper<DataSet> wrapper = new EntityWrapper<>();
+            wrapper.like("set_name", electProCon.getAreaNames());
+            DataSet dataSet = dataSetService.selectOne(wrapper);
+            ShuLie shuLie = new ShuLie();
+            shuLie.setToken(dataSet.getToken());
+        }
+        return rows;
     }
 
 

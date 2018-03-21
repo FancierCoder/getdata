@@ -1,11 +1,11 @@
 package com.zettayun.controller;
 
 import com.zettayun.api.DataSetApi;
+import com.zettayun.api.requestParamEntity.*;
 import com.zettayun.common.RestResponse;
 import com.zettayun.common.StatusCode;
 import com.zettayun.entity.RShuLie;
 import com.zettayun.entity.ShuLie;
-import com.zettayun.requestParamEntity.*;
 import com.zettayun.service.MongoDbService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
@@ -183,24 +183,31 @@ public class LdDataSetController {
 
     @ApiOperation(value = "构建单个数列", notes = "构建单个数列", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @RequestMapping(value = "/modify/buildDataSet", method = RequestMethod.POST)
-    public RestResponse<String> buildDataSet(RequestDataSet request){
+    public RestResponse<String> buildDataSet(@RequestBody RequestDataSet request){
         RestResponse<String> response = new RestResponse<>();
-        Assert.notNull(request.getDataSetName(), "dataSetName不能为空");
-        Assert.notNull(request.getDataSource(), "dataSource不能为空");
-        Assert.notNull(request.getDataSetName(), "period不能为空");
-        Assert.notNull(request.getDataSetName(), "valueUnit不能为空");
-        Assert.notNull(request.getDataSetName(), "setType不能为空");
-        String token = dataSetApi.buildDataSet(request);
-        if (token != null){
-            response.setCode(StatusCode.OK.code());
-            response.setMessage(StatusCode.OK.message());
-            response.setResult(token);
-        }else {
-            response.setCode(StatusCode.SERVER_UNKNOWN_ERROR.code());
-            response.setMessage("构建失败");
-            response.setResult(token);
+        try {
+            Assert.notNull(request.getDataSetName(), "dataSetName不能为空");
+            Assert.notNull(request.getDataSource(), "dataSource不能为空");
+            Assert.notNull(request.getDataSetName(), "period不能为空");
+            Assert.notNull(request.getDataSetName(), "valueUnit不能为空");
+            Assert.notNull(request.getDataSetName(), "setType不能为空");
+            String token = dataSetApi.buildDataSet(request);
+            if (token != null){
+                response.setCode(StatusCode.OK.code());
+                response.setMessage(StatusCode.OK.message());
+                response.setResult(token);
+            }else {
+                response.setCode(StatusCode.SERVER_UNKNOWN_ERROR.code());
+                response.setMessage("构建失败");
+            }
+        } catch (Exception e) {
+            response.setCode(StatusCode.INVALID_MODEL_FIELDS.code());
+            response.setMessage(e.getMessage());
         }
         return response;
     }
+
+
+
 
 }

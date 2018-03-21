@@ -1,10 +1,12 @@
 package com.zettayun.api;
 
 import com.alibaba.fastjson.JSONObject;
+import com.zettayun.api.requestParamEntity.RequestGetElectProCon;
+import com.zettayun.api.responseParamEntity.ResponseRow;
 import com.zettayun.entity.RShuLie;
-import com.zettayun.requestParamEntity.RequestCreateCollection;
-import com.zettayun.requestParamEntity.RequestDataSet;
-import com.zettayun.requestParamEntity.RequestValue;
+import com.zettayun.api.requestParamEntity.RequestCreateCollection;
+import com.zettayun.api.requestParamEntity.RequestDataSet;
+import com.zettayun.api.requestParamEntity.RequestValue;
 
 import java.util.Date;
 import java.util.List;
@@ -21,4 +23,6 @@ public interface DataSetApi {
     Map<String, String> createCollection(RequestCreateCollection collection);
 
     String buildDataSet(RequestDataSet dataSet);
+
+    List<ResponseRow> getElectProCon(List<RequestGetElectProCon> request);
 }

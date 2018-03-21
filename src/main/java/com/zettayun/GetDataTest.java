@@ -8,7 +8,7 @@ import com.zettayun.entity.RShuLie;
 import com.zettayun.entity.ShuLie;
 import com.zettayun.job.JobControl;
 import com.zettayun.method.GetExcelInfo;
-import com.zettayun.requestParamEntity.RequestData;
+import com.zettayun.api.requestParamEntity.RequestData;
 import com.zettayun.service.MongoDbService;
 import org.junit.Test;
 import org.junit.runner.RunWith;

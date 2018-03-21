@@ -34,11 +34,6 @@ public class RestResponse<T> implements Serializable {
     private Long total;
 
     /**
-     * 描述 : 错误
-     */
-    private ErrorResult error = null;
-
-    /**
      * 描述 : 构造函数
      */
     public RestResponse() {
@@ -58,26 +53,12 @@ public class RestResponse<T> implements Serializable {
      * 描述 : 构造函数
      *
      * @param httpStatus http状态
-     * @param error      错误
      */
-    public RestResponse(HttpStatus httpStatus, ErrorResult error) {
+    public RestResponse(HttpStatus httpStatus) {
         this.resultCode = httpStatus.value();
         this.resultMsg = httpStatus.getReasonPhrase();
-        this.error = error;
     }
 
-    /**
-     * 描述 : 构造函数
-     *
-     * @param resultCode    状态码(业务定义)
-     * @param resultMsg 状态码描述(业务定义)
-     * @param error   错误
-     */
-    public RestResponse(Integer resultCode, String resultMsg, ErrorResult error) {
-        this.resultCode = resultCode;
-        this.resultMsg = resultMsg;
-        this.error = error;
-    }
 
     /**
      * 描述 : 构造函数
@@ -126,14 +107,6 @@ public class RestResponse<T> implements Serializable {
 
     public void setResult(T result) {
         this.result = result;
-    }
-
-    public ErrorResult getError() {
-        return error;
-    }
-
-    public void setError(ErrorResult error) {
-        this.error = error;
     }
 
     public Long getTotal() {

@@ -157,6 +157,7 @@ public class LdDataSetController {
         return response;
     }
 
+    @ApiOperation(value = "创建Collection", notes = "创建Collection", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @RequestMapping(value = "/modify/createCollection", method = RequestMethod.POST)
     public RestResponse<String> createCollection(@RequestBody RequestCreateCollection createCollection){
         RestResponse<String> response = new RestResponse<>();
@@ -180,7 +181,8 @@ public class LdDataSetController {
         return response;
     }
 
-
+    @ApiOperation(value = "构建单个数列", notes = "构建单个数列", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/modify/buildDataSet", method = RequestMethod.POST)
     public RestResponse<String> buildDataSet(RequestDataSet request){
         RestResponse<String> response = new RestResponse<>();
         Assert.notNull(request.getDataSetName(), "dataSetName不能为空");
@@ -188,6 +190,16 @@ public class LdDataSetController {
         Assert.notNull(request.getDataSetName(), "period不能为空");
         Assert.notNull(request.getDataSetName(), "valueUnit不能为空");
         Assert.notNull(request.getDataSetName(), "setType不能为空");
+        String token = dataSetApi.buildDataSet(request);
+        if (token != null){
+            response.setCode(StatusCode.OK.code());
+            response.setMessage(StatusCode.OK.message());
+            response.setResult(token);
+        }else {
+            response.setCode(StatusCode.SERVER_UNKNOWN_ERROR.code());
+            response.setMessage("构建失败");
+            response.setResult(token);
+        }
         return response;
     }
 

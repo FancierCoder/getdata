@@ -26,7 +26,7 @@ import java.util.*;
 
 @Component
 @Transactional
-public class GetExcelInfo {
+public class GetExcelInfoFromOld {
 
     @Resource
     private DataSetService dataSetService;
@@ -151,7 +151,7 @@ public class GetExcelInfo {
 
     private void getData(Sheet sheet) {
         // 获得表头
-        int rows = 0;//从第几行开始
+        int rows = 1;//从第几行开始
         Row rowHead = sheet.getRow(rows);
         if (rowHead == null)
             return;
@@ -200,7 +200,7 @@ public class GetExcelInfo {
                         try {
                             date = format.parse(dateTime);
                         } catch (ParseException e1) {
-
+                            e.printStackTrace();
                         }
                         dataSet.setLastUpdateTime(date);
                     }
@@ -210,7 +210,7 @@ public class GetExcelInfo {
             }
             String token = UUID.randomUUID().toString().replaceAll("-", "");
             ArrayList<ShuLie> shuLies = new ArrayList<>();
-            for (int j = 9 + rows; j < totalRowNum - rows + 1; j++) {//提取后面全部行的信息
+            for (int j = 9 + rows; j < totalRowNum - rows ; j++) {//提取后面全部行的信息
                 Row row = sheet.getRow(j);
                 Cell cell;
                 try {
@@ -228,7 +228,7 @@ public class GetExcelInfo {
                         new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置时区为格林尼治时间，处理mongodb时间减8个小时的错误
                 format.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
                 try {
-                    shuLie.setDate(format.parse(getRightTypeCell(row.getCell(0)) + "-01 00:00:00"));
+                    shuLie.setDate(format.parse(getRightTypeCell(row.getCell(0)) + " 00:00:00"));
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }

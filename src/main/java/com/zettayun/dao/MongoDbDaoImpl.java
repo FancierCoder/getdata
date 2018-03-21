@@ -23,33 +23,33 @@ public class MongoDbDaoImpl implements MongoDbDao {
 
     @Override
     //@Transactional
-    public void insert(ShuLie ShuLie) {
-        mongoTemplate.insert(ShuLie, "shulie");
+    public void insert(ShuLie ShuLie, String collectionName) {
+        mongoTemplate.insert(ShuLie, collectionName);
     }
 
-    public void save(ShuLie shuLie){
-        mongoTemplate.save(shuLie, "shulie");
+    public void save(ShuLie shuLie, String collectionName){
+        mongoTemplate.save(shuLie, collectionName);
     }
 
     @Override
     //@Transactional
-    public void insertAll(List<ShuLie> ShuLies) {
-        mongoTemplate.insert(ShuLies, "shulie");
+    public void insertAll(List<ShuLie> ShuLies, String collectionName) {
+        mongoTemplate.insert(ShuLies, collectionName);
     }
 
     @Override
-    public void deleteById(String id) {
-        ShuLie demo = this.findById(id);
-        mongoTemplate.remove(demo, "shulie");
+    public void deleteById(String id, String collectionName) {
+        ShuLie demo = this.findById(id, collectionName);
+        mongoTemplate.remove(demo, collectionName);
     }
 
     @Override
-    public void delete(ShuLie criteriaShuLie) {
-        mongoTemplate.remove(criteriaShuLie, "shulie");
+    public void delete(ShuLie criteriaShuLie, String collectionName) {
+        mongoTemplate.remove(criteriaShuLie, collectionName);
     }
 
     @Override
-    public void deleteAll() {
+    public void deleteAll(String collectionName) {
         mongoTemplate.dropCollection(ShuLie.class);
     }
 
@@ -60,64 +60,64 @@ public class MongoDbDaoImpl implements MongoDbDao {
 //        Update update = Update.update("token", ShuLie.getToken())
 //                .set("value", ShuLie.getValue())
 //                .set("date", ShuLie.getDate());
-//        mongoTemplate.updateFirst(query, update, ShuLie.getClass(), "shulie");
+//        mongoTemplate.updateFirst(query, update, ShuLie.getClass(), collectionName);
 //    }
 
     @Override
-    public void update(ShuLie criteriaShuLie, ShuLie ShuLie) {
+    public void update(ShuLie criteriaShuLie, ShuLie ShuLie, String collectionName) {
         Query query = getQuery(criteriaShuLie);
         Update update = Update.update("token", ShuLie.getToken())
                 .set("value", ShuLie.getValue())
                 .set("date", ShuLie.getDate());
-        mongoTemplate.updateMulti(query, update, ShuLie.getClass(), "shulie");
+        mongoTemplate.updateMulti(query, update, ShuLie.getClass(), collectionName);
     }
 
     @Override
-    public ShuLie findById(String id) {
-        return mongoTemplate.findById(id, ShuLie.class, "shulie");
+    public ShuLie findById(String id, String collectionName) {
+        return mongoTemplate.findById(id, ShuLie.class, collectionName);
     }
 
     @Override
-    public List<ShuLie> findAll() {
-        return mongoTemplate.findAll(ShuLie.class, "shulie");
+    public List<ShuLie> findAll(String collectionName) {
+        return mongoTemplate.findAll(ShuLie.class, collectionName);
     }
 
     @Override
-    public List<ShuLie> find(ShuLie criteriaShuLie, int skip, int limit) {
+    public List<ShuLie> find(ShuLie criteriaShuLie, int skip, int limit, String collectionName) {
         Query query = getQuery(criteriaShuLie);
         query.skip(skip);
         query.limit(limit);
-        return mongoTemplate.find(query, ShuLie.class, "shulie");
+        return mongoTemplate.find(query, ShuLie.class, collectionName);
     }
 
-    public List<ShuLie> findByCondition(ShuLie criteriaShuLie) {
+    public List<ShuLie> findByCondition(ShuLie criteriaShuLie, String collectionName) {
         Query query = getQuery(criteriaShuLie);
-        return mongoTemplate.find(query, ShuLie.class, "shulie");
+        return mongoTemplate.find(query, ShuLie.class, collectionName);
     }
 
     @Override
-    public ShuLie findAndModify(ShuLie criteriaShuLie, ShuLie updateShuLie) {
+    public ShuLie findAndModify(ShuLie criteriaShuLie, ShuLie updateShuLie, String collectionName) {
         Query query = getQuery(criteriaShuLie);
         Update update = Update.update("token", updateShuLie.getToken())
                 .set("value", updateShuLie.getValue())
                 .set("date", updateShuLie.getDate());
-        return mongoTemplate.findAndModify(query, update, ShuLie.class, "shulie");
+        return mongoTemplate.findAndModify(query, update, ShuLie.class, collectionName);
     }
 
     @Override
-    public ShuLie findAndRemove(ShuLie criteriaShuLie) {
+    public ShuLie findAndRemove(ShuLie criteriaShuLie, String collectionName) {
         Query query = getQuery(criteriaShuLie);
-        return mongoTemplate.findAndRemove(query, ShuLie.class, "shulie");
+        return mongoTemplate.findAndRemove(query, ShuLie.class, collectionName);
     }
 
     @Override
-    public long count(ShuLie criteriaShuLie) {
+    public long count(ShuLie criteriaShuLie, String collectionName) {
         Query query = getQuery(criteriaShuLie);
-        return mongoTemplate.count(query, "shulie");
+        return mongoTemplate.count(query, collectionName);
     }
 
     @Override
-    public List<ShuLie> findByConditionAndOrderBy(ShuLie criteriaShuLie, Integer skip, Integer limit, JSONObject sortSet) {
+    public List<ShuLie> findByConditionAndOrderBy(ShuLie criteriaShuLie, Integer skip, Integer limit, JSONObject sortSet, String collectionName) {
         Query query = getQuery(criteriaShuLie);
         List<Sort.Order> orders = new ArrayList<>();
         try {
@@ -134,7 +134,7 @@ public class MongoDbDaoImpl implements MongoDbDao {
         query.with(new Sort(orders));
         query.skip(skip);
         query.limit(limit);
-        return mongoTemplate.find(query, ShuLie.class, "shulie");
+        return mongoTemplate.find(query, ShuLie.class, collectionName);
     }
 
     public boolean isExistCollection(String collectionName){

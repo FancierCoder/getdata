@@ -18,20 +18,21 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Api(value = "LdDataSetController.API", tags = { "LdDataSetController 接口" }, description = "LdDataSetController相关Api")
 @RestController
 @RequestMapping("/system")
-public class LdDataSetController {
+public class SystemController {
     @Resource
     private DataSetApi dataSetApi;
 
     @Resource
     private MongoDbService mongoDbService;
 
-    private final Logger log = LoggerFactory.getLogger(LdDataSetController.class);
+    private final Logger log = LoggerFactory.getLogger(SystemController.class);
 
     @ApiOperation(value = "根据token查询数列中所有的点", notes = "根据token查询数列中所有的点", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     @ApiModelProperty(name = "requestData", value = "查询参数", dataType = "RequestData")
@@ -49,7 +50,7 @@ public class LdDataSetController {
             ShuLie shuLie = new ShuLie();
             shuLie.setToken(requestData.getToken());
             log.info(shuLie.toString());
-            long count = mongoDbService.count(shuLie);
+            long count = mongoDbService.count(shuLie, "shulie");
             response.setCode(StatusCode.OK.code());
             response.setMessage(StatusCode.OK.message());
             response.setResult(shuLies);
@@ -104,7 +105,7 @@ public class LdDataSetController {
         criteria.setToken(token);
         criteria.setDate(new Date(date));
         if (isReplace == 1)
-            response.setTotal(mongoDbService.count(criteria));
+            response.setTotal(mongoDbService.count(criteria, "shulie"));
         else
             response.setTotal(1L);
         response.setCode(StatusCode.OK.code());
@@ -125,7 +126,7 @@ public class LdDataSetController {
         criteria.setToken(requestValue.getToken());
         criteria.setDate(requestValue.getDate());
         if (request.getIsReplace() == 1)
-            response.setTotal(mongoDbService.count(criteria));
+            response.setTotal(mongoDbService.count(criteria, "shulie"));
         else
             response.setTotal(1L);
         response.setCode(StatusCode.OK.code());
@@ -183,8 +184,9 @@ public class LdDataSetController {
 
     @ApiOperation(value = "构建单个数列", notes = "构建单个数列", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @RequestMapping(value = "/modify/buildDataSet", method = RequestMethod.POST)
-    public RestResponse<String> buildDataSet(@RequestBody RequestDataSet request){
-        RestResponse<String> response = new RestResponse<>();
+    public RestResponse<Map<String, String>> buildDataSet(@RequestBody RequestDataSet request){
+        RestResponse<Map<String, String>> response = new RestResponse<>();
+        HashMap<String, String> map = new HashMap<>();
         try {
             Assert.notNull(request.getDataSetName(), "dataSetName不能为空");
             Assert.notNull(request.getDataSource(), "dataSource不能为空");
@@ -193,9 +195,11 @@ public class LdDataSetController {
             Assert.notNull(request.getDataSetName(), "setType不能为空");
             String token = dataSetApi.buildDataSet(request);
             if (token != null){
+                map.put("token", token);
                 response.setCode(StatusCode.OK.code());
                 response.setMessage(StatusCode.OK.message());
-                response.setResult(token);
+                response.setResult(map);
+                response.setTotal(1L);
             }else {
                 response.setCode(StatusCode.SERVER_UNKNOWN_ERROR.code());
                 response.setMessage("构建失败");
@@ -207,7 +211,32 @@ public class LdDataSetController {
         return response;
     }
 
-
-
-
+    @ApiOperation(value = "批量构建数列", notes = "批量构建数列", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/modify/buildDataSetBatches", method = RequestMethod.POST)
+    public RestResponse<Map<String, String>> buildDataSetBatches(@RequestBody List<RequestDataSet> request){
+        RestResponse<Map<String, String>> response = new RestResponse<>();
+        try {
+            for (RequestDataSet dataSet : request){
+                Assert.notNull(dataSet.getDataSetName(), "dataSetName不能为空");
+                Assert.notNull(dataSet.getDataSource(), "dataSource不能为空");
+                Assert.notNull(dataSet.getDataSetName(), "period不能为空");
+                Assert.notNull(dataSet.getDataSetName(), "valueUnit不能为空");
+                Assert.notNull(dataSet.getDataSetName(), "setType不能为空");
+            }
+            Map<String, String> map = dataSetApi.buildDataSetBatches(request);
+            if (map.size() > 0){
+                response.setCode(StatusCode.OK.code());
+                response.setMessage(StatusCode.OK.message());
+                response.setTotal((long) request.size());
+                response.setResult(map);
+            }else {
+                response.setCode(StatusCode.SERVER_UNKNOWN_ERROR.code());
+                response.setMessage("构建失败");
+            }
+        } catch (Exception e) {
+            response.setCode(StatusCode.INVALID_MODEL_FIELDS.code());
+            response.setMessage(e.getMessage());
+        }
+        return response;
+    }
 }

@@ -20,64 +20,64 @@ public class MongoDbServiceImpl implements MongoDbService {
 
 
     @Override
-    public void insert(ShuLie ShuLie) {
-        mongoDao.insert(ShuLie);
+    public void insert(ShuLie ShuLie, String collectionName) {
+        mongoDao.insert(ShuLie, collectionName);
     }
 
     @Override
-    public void save(ShuLie shuLie) {
+    public void save(ShuLie shuLie, String collectionName) {
         
-        mongoDao.save(shuLie);
+        mongoDao.save(shuLie, collectionName);
     }
 
     @Override
-    public void insertAll(List<ShuLie> ShuLies) {
-        mongoDao.insertAll(ShuLies);
+    public void insertAll(List<ShuLie> ShuLies, String collectionName) {
+        mongoDao.insertAll(ShuLies, collectionName);
     }
 
     @Override
-    public void deleteById(String id) {
-        mongoDao.deleteById(id);
+    public void deleteById(String id, String collectionName) {
+        mongoDao.deleteById(id, collectionName);
     }
 
     @Override
-    public void delete(ShuLie criteriaShuLie) {
-        mongoDao.delete(criteriaShuLie);
+    public void delete(ShuLie criteriaShuLie, String collectionName) {
+        mongoDao.delete(criteriaShuLie, collectionName);
     }
 
     @Override
-    public void deleteAll() {
-        mongoDao.deleteAll();
+    public void deleteAll(String collectionName) {
+        mongoDao.deleteAll(collectionName);
     }
 
 //    @Override
 //    public void updateById(ShuLie ShuLie) {
-//        mongoDao.updateById(ShuLie);
+//        mongoDao.updateById(ShuLie, collectionName);
 //    }
 
     @Override
-    public void update(ShuLie criteriaShuLie, ShuLie ShuLie) {
-        mongoDao.update(criteriaShuLie, ShuLie);
+    public void update(ShuLie criteriaShuLie, ShuLie ShuLie, String collectionName) {
+        mongoDao.update(criteriaShuLie, ShuLie, collectionName);
     }
 
     @Override
-    public ShuLie findById(String id) {
-        return mongoDao.findById(id);
+    public ShuLie findById(String id, String collectionName) {
+        return mongoDao.findById(id, collectionName);
     }
 
     @Override
-    public List<ShuLie> findByCondition(ShuLie criteriaShuLie) {
-        return mongoDao.findByCondition(criteriaShuLie);
+    public List<ShuLie> findByCondition(ShuLie criteriaShuLie, String collectionName) {
+        return mongoDao.findByCondition(criteriaShuLie, collectionName);
     }
 
     @Override
-    public List<ShuLie> findAll() {
-        return mongoDao.findAll();
+    public List<ShuLie> findAll(String collectionName) {
+        return mongoDao.findAll(collectionName);
     }
 
     @Override
-    public List<RShuLie> findByConditionAndOrderBy(ShuLie criteriaShuLie, Integer skip, Integer limit, JSONObject sortSet) {
-        List<ShuLie> shuLies = mongoDao.findByConditionAndOrderBy(criteriaShuLie, skip, limit, sortSet);
+    public List<RShuLie> findByConditionAndOrderBy(ShuLie criteriaShuLie, Integer skip, Integer limit, JSONObject sortSet, String collectionName) {
+        List<ShuLie> shuLies = mongoDao.findByConditionAndOrderBy(criteriaShuLie, skip, limit, sortSet, collectionName);
         List<RShuLie> rShuLies = new ArrayList<>();
         for (ShuLie shuLie : shuLies){
             RShuLie rShuLie = new RShuLie();
@@ -90,18 +90,18 @@ public class MongoDbServiceImpl implements MongoDbService {
     }
 
     @Override
-    public ShuLie findAndModify(ShuLie criteriaShuLie, ShuLie updateShuLie) {
-        return mongoDao.findAndModify(criteriaShuLie, updateShuLie);
+    public ShuLie findAndModify(ShuLie criteriaShuLie, ShuLie updateShuLie, String collectionName) {
+        return mongoDao.findAndModify(criteriaShuLie, updateShuLie, collectionName);
     }
 
     @Override
-    public ShuLie findAndRemove(ShuLie criteriaShuLie) {
-        return mongoDao.findAndRemove(criteriaShuLie);
+    public ShuLie findAndRemove(ShuLie criteriaShuLie, String collectionName) {
+        return mongoDao.findAndRemove(criteriaShuLie, collectionName);
     }
 
     @Override
-    public long count(ShuLie criteriaShuLie) {
-        return mongoDao.count(criteriaShuLie);
+    public long count(ShuLie criteriaShuLie, String collectionName) {
+        return mongoDao.count(criteriaShuLie, collectionName);
     }
 
     @Override

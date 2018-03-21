@@ -2,13 +2,14 @@ package com.zettayun;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
-import com.zettayun.controller.LdDataSetController;
+import com.zettayun.controller.SystemController;
 import com.zettayun.entity.JobAndTrigger;
 import com.zettayun.entity.RShuLie;
 import com.zettayun.entity.ShuLie;
 import com.zettayun.job.JobControl;
 import com.zettayun.method.GetExcelInfo;
 import com.zettayun.api.requestParamEntity.RequestData;
+import com.zettayun.method.GetExcelInfoFromOld;
 import com.zettayun.service.MongoDbService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,27 +30,30 @@ public class GetDataTest {
     private GetExcelInfo getExcelInfo;
 
     @Resource
+    private GetExcelInfoFromOld getExcelInfoFromOld;
+
+    @Resource
     private MongoDbService mongoDbService;
 
     @Resource
     private JobControl jobControl;
 
     @Resource
-    private LdDataSetController ldDataSetController;
+    private SystemController systemController;
 
     @Test
     public void test1() {
-        getExcelInfo.getDataFromExcelFilePath("D:\\liduo_profile\\证券市场");
+        getExcelInfoFromOld.getDataFromExcelFilePath("D:\\liduo_profile\\证券市场");
     }
 
     @Test
     public void test2() {
-        getExcelInfo.getDataFromExcelFile("D:\\liduo_profile\\证券市场\\证券公司统计\\Y证券营业部数量：爱建证券.xlsx");
+        getExcelInfo.getDataFromExcelFile("D:\\liduo_profile\\电力电量完成情况（月）.xlsx");
     }
 
     @Test
     public void test3() {
-        long count = mongoDbService.count(null);
+        long count = mongoDbService.count(null, "shulie");
         System.out.println(count);
     }
 
@@ -69,7 +73,7 @@ public class GetDataTest {
         HashMap<String, Object> map = new HashMap<>();
         map.put("value", 1);
         JSONObject jsonObject = new JSONObject(map);
-        List<RShuLie> shuLieList = mongoDbService.findByConditionAndOrderBy(shuLie, 0, 5, jsonObject);
+        List<RShuLie> shuLieList = mongoDbService.findByConditionAndOrderBy(shuLie, 0, 5, jsonObject, "shulie");
         System.out.println(Arrays.toString(shuLieList.toArray()));
     }
 
@@ -99,5 +103,13 @@ public class GetDataTest {
         list.add("token");
         boolean test = mongoDbService.createIndex("test", list);
 
+    }
+
+    @Test
+    public void test8(){
+        ShuLie shuLie = new ShuLie();
+        shuLie.setDate(new Date(1417392000000L));
+        List<ShuLie> lieList = mongoDbService.findByCondition(shuLie, "shulie");
+        System.out.println(lieList);
     }
 }

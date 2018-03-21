@@ -12,7 +12,7 @@ public interface MongoDbDao {
      *
      * @param ShuLie
      */
-    void insert(ShuLie ShuLie);
+    void insert(ShuLie ShuLie, String collectionName);
 
     /**
      * 新增
@@ -20,7 +20,7 @@ public interface MongoDbDao {
      *
      * @param ShuLie
      */
-    void save(ShuLie ShuLie);
+    void save(ShuLie ShuLie, String collectionName);
 
     /**
      * 新增
@@ -28,7 +28,7 @@ public interface MongoDbDao {
      *
      * @param ShuLies
      */
-    void insertAll(List<ShuLie> ShuLies);
+    void insertAll(List<ShuLie> ShuLies, String collectionName);
 
     /**
      * 删除,主键id, 如果主键的值为null,删除会失败
@@ -36,7 +36,7 @@ public interface MongoDbDao {
      *
      * @param id
      */
-    void deleteById(String id);
+    void deleteById(String id, String collectionName);
 
     /**
      * 按条件删除
@@ -44,13 +44,13 @@ public interface MongoDbDao {
      *
      * @param criteriaShuLie
      */
-    void delete(ShuLie criteriaShuLie);
+    void delete(ShuLie criteriaShuLie, String collectionName);
 
     /**
      * 删除全部
      * <br>------------------------------<br>
      */
-    void deleteAll();
+    void deleteAll(String collectionName);
 
 //    /**
 //     * 修改
@@ -58,7 +58,7 @@ public interface MongoDbDao {
 //     *
 //     * @param ShuLie
 //     */
-//    void updateById(ShuLie ShuLie);
+//    void updateById(ShuLie ShuLie, String collectionName);
 
     /**
      * 更新多条
@@ -67,7 +67,7 @@ public interface MongoDbDao {
      * @param criteriaShuLie
      * @param ShuLie
      */
-    void update(ShuLie criteriaShuLie, ShuLie ShuLie);
+    void update(ShuLie criteriaShuLie, ShuLie ShuLie, String collectionName);
 
     /**
      * 根据主键查询
@@ -76,7 +76,7 @@ public interface MongoDbDao {
      * @param id
      * @return
      */
-    ShuLie findById(String id);
+    ShuLie findById(String id, String collectionName);
 
     /**
      * 查询全部
@@ -84,7 +84,7 @@ public interface MongoDbDao {
      *
      * @return
      */
-    List<ShuLie> findAll();
+    List<ShuLie> findAll(String collectionName);
 
     /**
      * 按条件查询
@@ -95,7 +95,7 @@ public interface MongoDbDao {
      * @param limit
      * @return
      */
-    List<ShuLie> find(ShuLie criteriaShuLie, int skip, int limit);
+    List<ShuLie> find(ShuLie criteriaShuLie, int skip, int limit, String collectionName);
 
     /**
      * 根据条件查询出来后 在去修改
@@ -112,7 +112,7 @@ public interface MongoDbDao {
      * @param criteriaShuLie 查询条件
      * @return
      */
-    List<ShuLie> findByCondition(ShuLie criteriaShuLie);
+    List<ShuLie> findByCondition(ShuLie criteriaShuLie, String collectionName);
 
     /**
      * 根据条件查询出来后 在去修改
@@ -124,7 +124,7 @@ public interface MongoDbDao {
      */
 
 
-    ShuLie findAndModify(ShuLie criteriaShuLie, ShuLie updateShuLie);
+    ShuLie findAndModify(ShuLie criteriaShuLie, ShuLie updateShuLie, String collectionName);
 
     /**
      * 查询出来后 删除
@@ -133,7 +133,7 @@ public interface MongoDbDao {
      * @param criteriaShuLie
      * @return
      */
-    ShuLie findAndRemove(ShuLie criteriaShuLie);
+    ShuLie findAndRemove(ShuLie criteriaShuLie, String collectionName);
 
     /**
      * count
@@ -142,7 +142,7 @@ public interface MongoDbDao {
      * @param criteriaShuLie
      * @return
      */
-    long count(ShuLie criteriaShuLie);
+    long count(ShuLie criteriaShuLie, String collectionName);
 
     /**
      * 根据条件查询出来后 在去修改
@@ -150,7 +150,7 @@ public interface MongoDbDao {
      *
      * @return
      */
-    List<ShuLie> findByConditionAndOrderBy(ShuLie criteriaShuLie, Integer skip, Integer limit, JSONObject sortSet);
+    List<ShuLie> findByConditionAndOrderBy(ShuLie criteriaShuLie, Integer skip, Integer limit, JSONObject sortSet, String collectionName);
 
 
     /**

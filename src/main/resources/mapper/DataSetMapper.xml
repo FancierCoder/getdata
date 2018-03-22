@@ -26,7 +26,7 @@
         valueUnit, remark, set_type AS setType
     </sql>
     <select id="selectByToken" resultType="com.zettayun.entity.DataSet">
-        SELECT * FROM test_zettayunee.data_set WHERE token = #{token}
+        SELECT * FROM data_set WHERE token = #{token}
     </select>
 
 </mapper>

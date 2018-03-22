@@ -6,6 +6,7 @@ import com.zettayun.api.DataSetApi;
 import com.zettayun.api.requestParamEntity.RequestCreateCollection;
 import com.zettayun.api.requestParamEntity.RequestDataSet;
 import com.zettayun.api.requestParamEntity.RequestValue;
+import com.zettayun.api.requestParamEntity.RequestValueSetByTime;
 import com.zettayun.api.responseParamEntity.ResponseRow;
 import com.zettayun.entity.DataSet;
 import com.zettayun.entity.RShuLie;
@@ -32,6 +33,23 @@ public class DataSetApiImpl implements DataSetApi {
             ShuLie shuLie = new ShuLie();
             shuLie.setToken(token);
             return mongoDbService.findByConditionAndOrderBy(shuLie, startRow, pageSize, sortSets, "shulie");
+        }
+        return null;
+    }
+
+    @Override
+    public List<RShuLie> queryValueSetByTime(RequestValueSetByTime request) {
+        if (request.getSetType() == 1) {
+            List<RShuLie> list = new ArrayList<>();
+            List<ShuLie> shuLieList = mongoDbService.findByRequest(request, "shulie");
+            for (ShuLie shuLie : shuLieList){
+                RShuLie lie = new RShuLie();
+                lie.setToken(shuLie.getToken());
+                lie.setDate(shuLie.getDate().getTime());
+                lie.setValue(shuLie.getValue());
+                list.add(lie);
+            }
+            return list;
         }
         return null;
     }

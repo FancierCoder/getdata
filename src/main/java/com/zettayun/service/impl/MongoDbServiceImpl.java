@@ -1,6 +1,7 @@
 package com.zettayun.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.zettayun.api.requestParamEntity.RequestValueSetByTime;
 import com.zettayun.dao.MongoDbDaoImpl;
 import com.zettayun.entity.RShuLie;
 import com.zettayun.entity.ShuLie;
@@ -73,6 +74,11 @@ public class MongoDbServiceImpl implements MongoDbService {
     @Override
     public List<ShuLie> findAll(String collectionName) {
         return mongoDao.findAll(collectionName);
+    }
+
+    @Override
+    public List<ShuLie> findByRequest(RequestValueSetByTime request, String collectionName) {
+        return mongoDao.findByRequest(request, collectionName);
     }
 
     @Override

@@ -17,10 +17,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Api(value = "LdDataSetController.API", tags = { "LdDataSetController 接口" }, description = "LdDataSetController相关Api")
 @RestController
@@ -58,6 +55,30 @@ public class SystemController {
         } catch (Exception e) {
             response.setCode(StatusCode.INVALID_MODEL_FIELDS.code());
             response.setMessage(e.getMessage());
+        }
+        return response;
+    }
+
+    @ApiOperation(value = "根据token和数据点时间区间查询数据", notes = "根据token和数据点时间区间查询数据", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/query/queryValueSetByTime", method = RequestMethod.POST)
+    public RestResponse<List<RShuLie>> queryValueSetByTime(@RequestBody RequestValueSetByTime request){
+        RestResponse<List<RShuLie>> response = new RestResponse<>();
+        try {
+            Assert.notNull(request, "请提交参数");
+            Assert.notNull(request.getToken(), "token不能为空");
+            Assert.notNull(request.getSetType(), "setType不能为空");
+            List<RShuLie> shuLies = dataSetApi.queryValueSetByTime(request);
+            response.setCode(StatusCode.OK.code());
+            response.setMessage(StatusCode.OK.message());
+            response.setTotal((long) shuLies.size());
+            response.setResult(shuLies);
+        } catch (Exception e) {
+            response.setCode(StatusCode.INVALID_MODEL_FIELDS.code());
+            if(e.getMessage() != null)
+                response.setMessage(e.getMessage());
+            else {
+                response.setMessage(e.toString());
+            }
         }
         return response;
     }

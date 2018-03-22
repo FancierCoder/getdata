@@ -61,7 +61,7 @@ public class DataSet extends Model<DataSet> {
     /**
      * 统计方式
      */
-    @TableField("peroid")
+    @TableField("period")
     private String period;
     /**
      * 状态，0为未启用，1为启用

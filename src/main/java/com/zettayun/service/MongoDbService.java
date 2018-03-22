@@ -1,6 +1,7 @@
 package com.zettayun.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.zettayun.api.requestParamEntity.RequestValueSetByTime;
 import com.zettayun.entity.RShuLie;
 import com.zettayun.entity.ShuLie;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,6 +98,14 @@ public interface MongoDbService {
      * @return
      */
     List<ShuLie> findAll(String collectionName);
+
+    /**
+     * 根据时间查询
+     * @param request
+     * @param collectionName
+     * @return
+     */
+    List<ShuLie> findByRequest(RequestValueSetByTime request, String collectionName);
 
     /**
      * 按条件查询

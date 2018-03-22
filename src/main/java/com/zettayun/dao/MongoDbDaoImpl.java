@@ -1,6 +1,7 @@
 package com.zettayun.dao;
 
 import com.alibaba.fastjson.JSONObject;
+import com.zettayun.api.requestParamEntity.RequestValueSetByTime;
 import com.zettayun.entity.ShuLie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -70,6 +71,33 @@ public class MongoDbDaoImpl implements MongoDbDao {
                 .set("value", ShuLie.getValue())
                 .set("date", ShuLie.getDate());
         mongoTemplate.updateMulti(query, update, ShuLie.getClass(), collectionName);
+    }
+
+    public List<ShuLie> findByRequest(RequestValueSetByTime request, String collectionName){
+        ShuLie shuLie = new ShuLie();
+        shuLie.setToken(request.getToken());
+        Query query = getQuery(shuLie);
+        Criteria criteria = Criteria.where("date").lte(request.getEndTime()).gte(request.getStartTime());
+        query.addCriteria(criteria);
+        query.limit(request.getPageSize());
+        query.skip(request.getStartRow());
+        List<Sort.Order> orders = new ArrayList<>();
+        JSONObject sortSet = new JSONObject();
+        try {
+            sortSet = request.getSortSet();
+            Assert.notNull(sortSet, "sortSet为空");
+        } catch (Exception e) {
+
+        }
+        for (Map.Entry<String, Object> entry : sortSet.entrySet()) {
+            String key = entry.getKey();
+            Integer value = (Integer)entry.getValue();
+            Sort.Order order = new Sort.Order(value > 0 ? Sort.Direction.ASC : Sort.Direction.DESC, key);
+            orders.add(order);
+        }
+        if (orders.size() > 0)
+            query.with(new Sort(orders));
+        return mongoTemplate.find(query, ShuLie.class, collectionName);
     }
 
     @Override

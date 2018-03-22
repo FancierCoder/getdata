@@ -1,6 +1,7 @@
 package com.zettayun.dao;
 
 import com.alibaba.fastjson.JSONObject;
+import com.zettayun.api.requestParamEntity.RequestValueSetByTime;
 import com.zettayun.entity.ShuLie;
 
 import java.util.List;
@@ -68,6 +69,14 @@ public interface MongoDbDao {
      * @param ShuLie
      */
     void update(ShuLie criteriaShuLie, ShuLie ShuLie, String collectionName);
+
+    /**
+     * 根据时间查询
+     * @param request
+     * @param collectionName
+     * @return
+     */
+    List<ShuLie> findByRequest(RequestValueSetByTime request, String collectionName);
 
     /**
      * 根据主键查询

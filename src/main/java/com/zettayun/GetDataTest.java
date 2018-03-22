@@ -2,13 +2,14 @@ package com.zettayun;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
+import com.zettayun.api.requestParamEntity.RequestData;
+import com.zettayun.api.requestParamEntity.RequestValueSetByTime;
 import com.zettayun.controller.SystemController;
 import com.zettayun.entity.JobAndTrigger;
 import com.zettayun.entity.RShuLie;
 import com.zettayun.entity.ShuLie;
 import com.zettayun.job.JobControl;
 import com.zettayun.method.GetExcelInfo;
-import com.zettayun.api.requestParamEntity.RequestData;
 import com.zettayun.method.GetExcelInfoFromOld;
 import com.zettayun.service.MongoDbService;
 import org.junit.Test;
@@ -18,6 +19,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RunWith(SpringRunner.class)
@@ -111,5 +114,19 @@ public class GetDataTest {
         shuLie.setDate(new Date(1417392000000L));
         List<ShuLie> lieList = mongoDbService.findByCondition(shuLie, "shulie");
         System.out.println(lieList);
+    }
+
+    @Test
+    public void test9() throws ParseException {
+        RequestValueSetByTime setByTime = new RequestValueSetByTime();
+        setByTime.setToken("658475a253a04c18ad5559a00944daff");
+        SimpleDateFormat format =
+                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置时区为格林尼治时间，处理mongodb时间减8个小时的错误
+        format.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
+        setByTime.setStartTime(format.parse("2018-01-27 00:00:00").getTime());
+        setByTime.setEndTime(format.parse("2018-02-06 00:00:00").getTime());
+        setByTime.setSetType(1);
+        List<ShuLie> shulie = mongoDbService.findByRequest(setByTime, "shulie");
+        System.out.println(Arrays.toString(shulie.toArray()));
     }
 }

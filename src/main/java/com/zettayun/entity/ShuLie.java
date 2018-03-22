@@ -2,11 +2,13 @@ package com.zettayun.entity;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.util.Date;
 
 @ApiModel("数列信息")
+@Document
 public class ShuLie implements Serializable {
 
     //private String id;

@@ -1,10 +1,15 @@
 package com.zettayun.method;
 
 
-import com.zettayun.entity.DataSet;
-import com.zettayun.entity.ShuLie;
-import com.zettayun.service.DataSetService;
-import com.zettayun.service.MongoDbService;
+import com.alibaba.fastjson.JSONObject;
+import com.zettayun.api.requestParamEntity.RequestDataSet;
+import com.zettayun.api.requestParamEntity.RequestValueSetBatches;
+import com.zettayun.api.requestParamEntity.Set;
+import com.zettayun.mongo.MongoDbService;
+import com.zettayun.entity.LD.DataSet;
+import com.zettayun.entity.LD.ShuLie;
+import com.zettayun.service.LD.DataSetService;
+import com.zettayun.util.ApiUtil;
 import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -32,7 +37,7 @@ public class GetExcelInfo {
     private DataSetService dataSetService;
 
     @Resource
-    private MongoDbService mongoDbService;
+    private MongoDbService<ShuLie> mongoDbService;
 
     public void getDataFromExcelFilePath(String filePathFolder) {
         // 此处路径指定到目录而不是单个文件
@@ -158,6 +163,7 @@ public class GetExcelInfo {
         int flag = 1;//从第二列开始
         // ----------------这里根据你的表格有多少列
         while (flag < rowHead.getPhysicalNumberOfCells()) {
+            String token = UUID.randomUUID().toString().replaceAll("-", "");
             DataSet dataSet = new DataSet();
             //Cell cell = rowHead.getCell(flag);
             int totalRowNum = sheet.getLastRowNum();
@@ -208,7 +214,7 @@ public class GetExcelInfo {
                 }
                 dataSet.setDataSource(getRightTypeCell(cell).toString());
             }
-            String token = UUID.randomUUID().toString().replaceAll("-", "");
+
             ArrayList<ShuLie> shuLies = new ArrayList<>();
             for (int j = 9 + rows; j < totalRowNum - rows + 1; j++) {//提取后面全部行的信息
                 Row row = sheet.getRow(j);
@@ -248,14 +254,55 @@ public class GetExcelInfo {
             dataSet.setStatus(1);
             dataSet.setSetType(1);
             //持久化操作
-            mongoDbService.insertAll(shuLies, "shulie");
-            boolean insert = dataSetService.insert(dataSet);
+           /* mongoDbService.insertAll(shuLies, "shulie");
+            boolean insert = dataSetService.insert(dataSet) > 0;
             if (!insert) {//如果插入不成功
                 throw new RuntimeException("插入时出现错误");
-            }
+            }*/
+            packageData(shuLies, dataSet);
             //int i = 1 / 0;//制造错误，测试是否回滚
             System.out.println(dataSet);
 
+        }
+    }
+
+    private void packageData(List<ShuLie> lieList, DataSet sets){
+        JSONObject valueSets = new JSONObject();
+        JSONObject dataSets = new JSONObject();
+
+        RequestDataSet dataSet = new RequestDataSet();
+        dataSet.setDataSetName(sets.getSetName());
+        dataSet.setDataSource(sets.getDataSource());
+        dataSet.setPeriod(sets.getPeriod());
+        dataSet.setSetType(sets.getSetType());
+        dataSet.setValueUnit(sets.getValueUnit());
+        dataSets.put("request", dataSet);
+        String token = ApiUtil.importDataSet("http://localhost:8081/system/modify/buildDataSet", dataSets.getJSONObject("request").toJSONString());
+        if (token == null)
+            throw new RuntimeException("插入时出现错误");
+        ArrayList<Set> setList = new ArrayList<>();
+        for (ShuLie lie : lieList){
+            Set set = new Set();
+            set.setDate(lie.getDate().getTime());
+            set.setToken(token);
+            set.setValue(lie.getValue());
+            setList.add(set);
+        }
+
+
+        RequestValueSetBatches valueSetBatches = new RequestValueSetBatches();
+        valueSetBatches.setIsReplace(0);
+        valueSetBatches.setSetType(1);
+        valueSetBatches.setRows(setList);
+        valueSets.put("request", valueSetBatches);
+
+        try {
+            boolean b = ApiUtil.importData("http://localhost:8081/system/modify/importValueSetBatches", valueSets.getJSONObject("request").toJSONString());
+            if (b)
+                throw new RuntimeException("插入时出现错误");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("插入时出现错误");
         }
     }
 }

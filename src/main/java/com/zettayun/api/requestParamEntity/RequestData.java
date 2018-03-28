@@ -1,28 +1,21 @@
 package com.zettayun.api.requestParamEntity;
 
 import com.alibaba.fastjson.JSONObject;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import java.util.Date;
+import java.util.HashMap;
 
-@ApiModel(value = "ValueSetByTime", description = "带有开始和结束时间的查询")
-public class RequestValueSetByTime {
-	
-	@ApiModelProperty(value = "token信息", required = true)
+@ApiModel(value = "RequestData", description="QueryData描述")
+public class RequestData {
+
+    @ApiModelProperty(value = "token信息", required = true)
     private String token;
 
-	@ApiModelProperty(value = "setType信息", required = true, example = "1")
+    @ApiModelProperty(value = "setType信息", required = true, example = "1")
     private Integer setType;
 
-	@ApiModelProperty(value = "开始时间", required = true)
-    private Long startTime;
-
-	@ApiModelProperty(value = "结束时间", required = true)
-    private Long endTime;
-
-	@ApiModelProperty("从哪一行开始分页")
+    @ApiModelProperty("从哪一行开始分页")
     private Integer startRow = 0;
 
     @ApiModelProperty(value = "页面大小", example = "10")
@@ -47,22 +40,6 @@ public class RequestValueSetByTime {
         this.setType = setType;
     }
 
-    public Date getStartTime() {
-        return new Date(startTime);
-    }
-
-    public void setStartTime(Long startTime) {
-        this.startTime = startTime;
-    }
-
-    public Date getEndTime() {
-        return new Date(endTime);
-    }
-
-    public void setEndTime(Long endTime) {
-        this.endTime = endTime;
-    }
-
     public Integer getStartRow() {
         return startRow;
     }
@@ -85,5 +62,16 @@ public class RequestValueSetByTime {
 
     public void setSortSet(JSONObject sortSet) {
         this.sortSet = sortSet;
+    }
+
+    @Override
+    public String toString() {
+        return "RequestData{" +
+                "token='" + token + '\'' +
+                ", setType=" + setType +
+                ", startRow=" + startRow +
+                ", pageSize=" + pageSize +
+                ", sortSet=" + sortSet +
+                '}';
     }
 }

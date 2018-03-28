@@ -4,9 +4,9 @@ import com.zettayun.api.DataSetApi;
 import com.zettayun.api.requestParamEntity.*;
 import com.zettayun.common.RestResponse;
 import com.zettayun.common.StatusCode;
-import com.zettayun.entity.RShuLie;
-import com.zettayun.entity.ShuLie;
-import com.zettayun.service.MongoDbService;
+import com.zettayun.entity.LD.RShuLie;
+import com.zettayun.entity.LD.ShuLie;
+import com.zettayun.mongo.MongoDbService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
@@ -14,12 +14,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-@Api(value = "LdDataSetController.API", tags = { "LdDataSetController 接口" }, description = "LdDataSetController相关Api")
+@Api(value = "SystemController.API", tags = { "SystemController 接口" }, description = "SystemController相关Api")
 @RestController
 @RequestMapping("/system")
 public class SystemController {
@@ -27,11 +32,11 @@ public class SystemController {
     private DataSetApi dataSetApi;
 
     @Resource
-    private MongoDbService mongoDbService;
+    private MongoDbService<ShuLie> mongoDbService;
 
     private final Logger log = LoggerFactory.getLogger(SystemController.class);
 
-    @ApiOperation(value = "根据token查询数列中所有的点", notes = "根据token查询数列中所有的点", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @ApiOperation(value = "根据token查询数列中所有的点", notes = "根据token查询数列中所有的点", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiModelProperty(name = "requestData", value = "查询参数", dataType = "RequestData")
     @RequestMapping(value = "/query/queryValueSet", method = RequestMethod.POST)
     public RestResponse<List<RShuLie>> queryDataSet(@RequestBody RequestData requestData) {
@@ -39,7 +44,7 @@ public class SystemController {
         try {
             Assert.notNull(requestData.getToken(), "token不能为空");
             Assert.notNull(requestData.getSetType(), "setType不能为空");
-            List<RShuLie> shuLies = dataSetApi.queryDataSet(requestData.getToken(),
+            List<RShuLie> shuLies = dataSetApi.queryValueSet(requestData.getToken(),
                     requestData.getSetType(),
                     requestData.getStartRow(),
                     requestData.getPageSize(),
@@ -48,13 +53,17 @@ public class SystemController {
             shuLie.setToken(requestData.getToken());
             log.info(shuLie.toString());
             long count = mongoDbService.count(shuLie, "shulie");
-            response.setCode(StatusCode.OK.code());
-            response.setMessage(StatusCode.OK.message());
+            response.setResultCode(StatusCode.OK.code());
+            response.setResultMsg(StatusCode.OK.message());
             response.setResult(shuLies);
             response.setTotal(count);
         } catch (Exception e) {
-            response.setCode(StatusCode.INVALID_MODEL_FIELDS.code());
-            response.setMessage(e.getMessage());
+            response.setResultCode(StatusCode.INVALID_MODEL_FIELDS.code());
+            if(e.getMessage() != null)
+                response.setResultMsg(e.getMessage());
+            else {
+                response.setResultMsg(e.toString());
+            }
         }
         return response;
     }
@@ -67,17 +76,19 @@ public class SystemController {
             Assert.notNull(request, "请提交参数");
             Assert.notNull(request.getToken(), "token不能为空");
             Assert.notNull(request.getSetType(), "setType不能为空");
+            Assert.notNull(request.getStartTime(), "startTime不能为空");
+            Assert.notNull(request.getEndTime(), "endTime不能为空");
             List<RShuLie> shuLies = dataSetApi.queryValueSetByTime(request);
-            response.setCode(StatusCode.OK.code());
-            response.setMessage(StatusCode.OK.message());
+            response.setResultCode(StatusCode.OK.code());
+            response.setResultMsg(StatusCode.OK.message());
             response.setTotal((long) shuLies.size());
             response.setResult(shuLies);
         } catch (Exception e) {
-            response.setCode(StatusCode.INVALID_MODEL_FIELDS.code());
+            response.setResultCode(StatusCode.INVALID_MODEL_FIELDS.code());
             if(e.getMessage() != null)
-                response.setMessage(e.getMessage());
+                response.setResultMsg(e.getMessage());
             else {
-                response.setMessage(e.toString());
+                response.setResultMsg(e.toString());
             }
         }
         return response;
@@ -102,57 +113,72 @@ public class SystemController {
 //            shuLie.setToken(requestData.getToken());
 //            log.info(shuLie.toString());
 //            long count = mongoDbService.count(shuLie);
-//            response.setCode(StatusCode.OK.code());
-//            response.setMessage(StatusCode.OK.message());
+//            response.setResultCode(StatusCode.OK.code());
+//            response.setResultMsg(StatusCode.OK.message());
 //            response.setResult(shuLies);
 //            response.setTotal(count);
 //        } catch (IllegalArgumentException e) {
-//            response.setCode(StatusCode.INVALID_MODEL_FIELDS.code());
-//            response.setMessage(e.getMessage());
+//            response.setResultCode(StatusCode.INVALID_MODEL_FIELDS.code());
+//            response.setResultMsg(e.getMessage());
 //        }
 //        return response;
 //    }
 
-    @ApiOperation(value = "将单个数据点插入Mongo集合中", notes = "将单个数据点插入Mongo集合中", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    @RequestMapping(value = "/modify/importValueSet", method = RequestMethod.POST)
-    public RestResponse<Map<String ,Long>> importDataSet(@RequestParam String token,
-                                                    @RequestParam Object value,
-                                                    @RequestParam Long date,
-                                                    @RequestParam Integer isReplace,
-                                                    @RequestParam Integer setType){
-        RestResponse<Map<String, Long>> response = new RestResponse<>();
-        Map<String, Long> map = dataSetApi.importDataSet(token, value, new Date(date), isReplace, setType);
-        ShuLie criteria = new ShuLie();
-        criteria.setToken(token);
-        criteria.setDate(new Date(date));
-        if (isReplace == 1)
-            response.setTotal(mongoDbService.count(criteria, "shulie"));
-        else
-            response.setTotal(1L);
-        response.setCode(StatusCode.OK.code());
-        response.setMessage(StatusCode.OK.message());
-        response.setResult(map);
-        return response;
-    }
+//    @ApiOperation(value = "将单个数据点插入Mongo集合中", notes = "将单个数据点插入Mongo集合中", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+//    @RequestMapping(value = "/modify/importValueSet2", method = RequestMethod.POST)
+//    public RestResponse<Map<String ,Long>> importDataSet2(@RequestParam String token,
+//                                                    @RequestParam Object value,
+//                                                    @RequestParam Long date,
+//                                                    @RequestParam Integer isReplace,
+//                                                    @RequestParam Integer setType){
+//        RestResponse<Map<String, Long>> response = new RestResponse<>();
+//        Map<String, Long> map = dataSetApi.importDataSet(token, value, new Date(date), isReplace, setType);
+//        ShuLie criteria = new ShuLie();
+//        criteria.setToken(token);
+//        criteria.setDate(new Date(date));
+//        if (isReplace == 1)
+//            response.setTotal(mongoDbService.count(criteria, "shulie"));
+//        else
+//            response.setTotal(1L);
+//        response.setResultCode(StatusCode.OK.code());
+//        response.setResultMsg(StatusCode.OK.message());
+//        response.setResult(map);
+//        return response;
+//    }
 
-    @ApiOperation(value = "将单个数据点插入Mongo集合中", notes = "将单个数据点插入Mongo集合中", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    @RequestMapping(value = "/modify/importValueSet2", method = RequestMethod.POST)
-    public RestResponse<Map<String ,Long>> importDataSet2(@RequestBody RequestValueSet request){
+    @ApiOperation(value = "将单个数据点插入Mongo集合中", notes = "将单个数据点插入Mongo集合中", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/modify/importValueSet", method = RequestMethod.POST)
+    public RestResponse<Map<String ,Long>> importDataSet(@RequestBody RequestValueSet request){
         RestResponse<Map<String, Long>> response = new RestResponse<>();
-        RequestValue requestValue = request.getRequestValue();
-        Map<String, Long> map = dataSetApi.importDataSet(requestValue.getToken(),
-                requestValue.getValue(), requestValue.getDate(),
-                request.getIsReplace(), request.getSetType());
-        ShuLie criteria = new ShuLie();
-        criteria.setToken(requestValue.getToken());
-        criteria.setDate(requestValue.getDate());
-        if (request.getIsReplace() == 1)
-            response.setTotal(mongoDbService.count(criteria, "shulie"));
-        else
-            response.setTotal(1L);
-        response.setCode(StatusCode.OK.code());
-        response.setMessage(StatusCode.OK.message());
-        response.setResult(map);
+        try {
+            Assert.notNull(request.getSet(), "set不能为空");
+            Assert.notNull(request.getSet().getToken(), "token不能为空");
+            Assert.notNull(request.getSet().getValue(), "value不能为空");
+            Assert.notNull(request.getSet().getDate(), "date不能为空");
+            Assert.notNull(request.getIsReplace(), "isReplace不能为空");
+            Assert.notNull(request.getSetType(), "setType不能为空");
+            Set requestValue = request.getSet();
+            Map<String, Long> map = dataSetApi.importValueSet(requestValue.getToken(),
+                    requestValue.getValue(), requestValue.getDate(),
+                    request.getIsReplace(), request.getSetType());
+            ShuLie criteria = new ShuLie();
+            criteria.setToken(requestValue.getToken());
+            criteria.setDate(requestValue.getDate());
+            if (request.getIsReplace() == 1)
+                response.setTotal(mongoDbService.count(criteria, "shulie"));
+            else
+                response.setTotal(1L);
+            response.setResultCode(StatusCode.OK.code());
+            response.setResultMsg(StatusCode.OK.message());
+            response.setResult(map);
+        } catch (Exception e) {
+            response.setResultCode(StatusCode.INVALID_PARAMS_CONVERSION.code());
+            if(e.getMessage() != null)
+                response.setResultMsg(e.getMessage());
+            else {
+                response.setResultMsg(e.toString());
+            }
+        }
         return response;
     }
 
@@ -161,19 +187,23 @@ public class SystemController {
     public RestResponse<Map<String, Long>> importValueSetBatches(@RequestBody RequestValueSetBatches request){
         RestResponse<Map<String, Long>> response = new RestResponse<>();
         try {
-            Assert.notNull(request.getValueRows(), "valueRows不能为空");
+            Assert.notNull(request.getRows(), "rows不能为空");
             Assert.notNull(request.getIsReplace(), "isReplace不能为空");
             Assert.notNull(request.getSetType(), "setType不能为空");
-            Map<String, Long> batches = dataSetApi.importValueSetBatches(request.getValueRows(), request.getIsReplace(), request.getSetType());
-            response.setCode(StatusCode.OK.code());
-            response.setMessage(StatusCode.OK.message());
+            Map<String, Long> batches = dataSetApi.importValueSetBatches(request.getRows(), request.getIsReplace(), request.getSetType());
+            response.setResultCode(StatusCode.OK.code());
+            response.setResultMsg(StatusCode.OK.message());
             response.setResult(batches);
             Long updated = batches.get("updated");
             Long inserted = batches.get("inserted");
             response.setTotal(updated + inserted);
         } catch (Exception e) {
-            response.setCode(StatusCode.INVALID_PARAMS_CONVERSION.code());
-            response.setMessage(e.getMessage());
+            response.setResultCode(StatusCode.INVALID_PARAMS_CONVERSION.code());
+            if(e.getMessage() != null)
+                response.setResultMsg(e.getMessage());
+            else {
+                response.setResultMsg(e.toString());
+            }
         }
 
         return response;
@@ -189,16 +219,20 @@ public class SystemController {
             Map<String, String> map = dataSetApi.createCollection(createCollection);
             String result = map.get("result");
             if (result.equals("success")){
-                response.setCode(StatusCode.OK.code());
-                response.setMessage(StatusCode.OK.message());
+                response.setResultCode(StatusCode.OK.code());
+                response.setResultMsg(StatusCode.OK.message());
                 response.setResult(result);
             }else {
-                response.setCode(StatusCode.SERVER_UNKNOWN_ERROR.code());
-                response.setMessage(result);
+                response.setResultCode(StatusCode.SERVER_UNKNOWN_ERROR.code());
+                response.setResultMsg(result);
             }
         } catch (Exception e) {
-            response.setCode(StatusCode.INVALID_MODEL_FIELDS.code());
-            response.setMessage(e.getMessage());
+            response.setResultCode(StatusCode.INVALID_MODEL_FIELDS.code());
+            if(e.getMessage() != null)
+                response.setResultMsg(e.getMessage());
+            else {
+                response.setResultMsg(e.toString());
+            }
         }
         return response;
     }
@@ -217,17 +251,21 @@ public class SystemController {
             String token = dataSetApi.buildDataSet(request);
             if (token != null){
                 map.put("token", token);
-                response.setCode(StatusCode.OK.code());
-                response.setMessage(StatusCode.OK.message());
+                response.setResultCode(StatusCode.OK.code());
+                response.setResultMsg(StatusCode.OK.message());
                 response.setResult(map);
                 response.setTotal(1L);
             }else {
-                response.setCode(StatusCode.SERVER_UNKNOWN_ERROR.code());
-                response.setMessage("构建失败");
+                response.setResultCode(StatusCode.SERVER_UNKNOWN_ERROR.code());
+                response.setResultMsg("构建失败");
             }
         } catch (Exception e) {
-            response.setCode(StatusCode.INVALID_MODEL_FIELDS.code());
-            response.setMessage(e.getMessage());
+            response.setResultCode(StatusCode.INVALID_MODEL_FIELDS.code());
+            if(e.getMessage() != null)
+                response.setResultMsg(e.getMessage());
+            else {
+                response.setResultMsg(e.toString());
+            }
         }
         return response;
     }
@@ -246,18 +284,49 @@ public class SystemController {
             }
             Map<String, String> map = dataSetApi.buildDataSetBatches(request);
             if (map.size() > 0){
-                response.setCode(StatusCode.OK.code());
-                response.setMessage(StatusCode.OK.message());
+                response.setResultCode(StatusCode.OK.code());
+                response.setResultMsg(StatusCode.OK.message());
                 response.setTotal((long) request.size());
                 response.setResult(map);
             }else {
-                response.setCode(StatusCode.SERVER_UNKNOWN_ERROR.code());
-                response.setMessage("构建失败");
+                response.setResultCode(StatusCode.SERVER_UNKNOWN_ERROR.code());
+                response.setResultMsg("构建失败");
             }
         } catch (Exception e) {
-            response.setCode(StatusCode.INVALID_MODEL_FIELDS.code());
-            response.setMessage(e.getMessage());
+            response.setResultCode(StatusCode.INVALID_MODEL_FIELDS.code());
+            if(e.getMessage() != null)
+                response.setResultMsg(e.getMessage());
+            else {
+                response.setResultMsg(e.toString());
+            }
         }
         return response;
     }
+
+//    @ApiOperation(value = "批量构建报表", notes = "批量构建报表", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+//    @RequestMapping(value = "/modify/importReportSetBatches", method = RequestMethod.POST)
+//    public RestResponse<Map<String, Long>> importReportSetBatches(@RequestBody RequestReportSetBatches request) {
+//        RestResponse<Map<String, Long>> response = new RestResponse<Map<String, Long>>();
+//        try {
+//            Assert.notNull(request, "请求不能为空");
+//            Assert.notNull(request.getIsReplace(), "isReplace不能为空");
+//            Assert.notNull(request.getValueRows(), "valueRow不能为空");
+//            Map<String, Long> result = dataSetApi.importReportSetBatches(request);
+//            Long updated = result.get("updated");
+//            Long inserted = result.get("inserted");
+//            response.setTotal(updated + inserted);
+//            response.setResultCode(StatusCode.OK.code());
+//            response.setResultMsg(StatusCode.OK.message());
+//            response.setResult(result);
+//        } catch (Exception e) {
+//            response.setResultCode(StatusCode.INVALID_MODEL_FIELDS.code());
+//            if(e.getMessage() != null)
+//                response.setResultMsg(e.getMessage());
+//            else {
+//                response.setResultMsg(e.toString());
+//            }
+//        }
+//        return response;
+//    }
 }
+

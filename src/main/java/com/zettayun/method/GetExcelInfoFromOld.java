@@ -1,10 +1,10 @@
 package com.zettayun.method;
 
 
-import com.zettayun.entity.DataSet;
-import com.zettayun.entity.ShuLie;
-import com.zettayun.service.DataSetService;
-import com.zettayun.service.MongoDbService;
+import com.zettayun.mongo.MongoDbService;
+import com.zettayun.entity.LD.DataSet;
+import com.zettayun.entity.LD.ShuLie;
+import com.zettayun.service.LD.DataSetService;
 import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -32,36 +32,103 @@ public class GetExcelInfoFromOld {
     private DataSetService dataSetService;
 
     @Resource
-    private MongoDbService mongoDbService;
+    private MongoDbService<ShuLie> mongoDbService;
+
+    private void getFromPath(String path){
+        int fileNum = 0, folderNum = 0;
+        File file = new File(path);
+        if (file.exists()) {
+            LinkedList<File> list = new LinkedList<File>();
+            File[] files = file.listFiles();
+            for (File file2 : files) {
+                if (file2.isDirectory()) {
+                    //System.out.println("文件夹:" + file2.getAbsolutePath());
+                    list.add(file2);
+                    folderNum++;
+                } else {
+                    if (file2.getName().indexOf(".xls") > 0) {
+                        getDataFromExcelFile(file2.getAbsolutePath());
+                    }
+                    //System.out.println("文件:" + file2.getAbsolutePath());
+                    fileNum++;
+                }
+            }
+            File temp_file;
+            while (!list.isEmpty()) {
+                temp_file = list.removeFirst();
+                files = temp_file.listFiles();
+                for (File file2 : files) {
+                    if (file2.isDirectory()) {
+                        //System.out.println("文件夹:" + file2.getAbsolutePath());
+                        list.add(file2);
+                        folderNum++;
+                    } else {
+                        if (file2.getName().indexOf(".xls") > 0) {
+                            getDataFromExcelFile(file2.getAbsolutePath());
+                        }
+                        //System.out.println("文件:" + file2.getAbsolutePath());
+                        fileNum++;
+                    }
+                }
+            }
+        } else {
+            System.out.println("文件不存在!");
+        }
+        System.out.println("文件夹共有:" + folderNum + ",文件共有:" + fileNum);
+    }
 
     public void getDataFromExcelFilePath(String filePathFolder) {
         // 此处路径指定到目录而不是单个文件
-        File file = new File(filePathFolder);
-        if (file.isDirectory()) {
-            File[] files = file.listFiles();
-            if (files != null) {
-                for (File f : files)
-                    // 如果还存在子目录则继续读取子目录下的Excel文件
-                    if (f.isDirectory()) {
-                        File[] subFiles = f.listFiles();
-                        if (subFiles != null) {
-                            for (File fi : subFiles) {
-                                // 对文件进行过滤，只读取Excel文件，非Excel文件不读取，否则会出错
-                                if (fi.getName().indexOf(".xls") > 0) {
-                                    getDataFromExcelFile(fi.getAbsolutePath());
-                                }
-                                //System.out.println(fi.getName());
-                            }
-                        }
-                    } else {
-                        // 对文件进行过滤，只读取Excel文件，非Excel文件不读取，否则会出错
-                        if (f.getName().indexOf(".xls") > 0) {
-                            getDataFromExcelFile(f.getAbsolutePath());
-                            //System.out.println(f.getName());
-                        }
-                    }
-            }
-        }
+//        File file = new File(filePathFolder);
+//        if (file.isDirectory()) {
+//            File[] files = file.listFiles();
+//            if (files != null) {
+//                for (File f : files)
+//                    // 如果还存在子目录则继续读取子目录下的Excel文件
+//                    if (f.isDirectory()) {
+//                        File[] subFiles = f.listFiles();
+//                        if (subFiles != null) {
+//                            for (File fi : subFiles) {
+//                                // 对文件进行过滤，只读取Excel文件，非Excel文件不读取，否则会出错
+//                                if (fi.getName().indexOf(".xls") > 0) {
+//                                    getDataFromExcelFile(fi.getAbsolutePath());
+//                                }
+//                                //System.out.println(fi.getName());
+//                            }
+//                        }
+//                    } else {
+//                        // 对文件进行过滤，只读取Excel文件，非Excel文件不读取，否则会出错
+//                        if (f.getName().indexOf(".xls") > 0) {
+//                            getDataFromExcelFile(f.getAbsolutePath());
+//                            //System.out.println(f.getName());
+//                        }
+//                    }
+//            }
+//        }
+//        File file = new File(filePathFolder);
+//        if (file.exists()) {
+//            File[] files = file.listFiles();
+//            if (files.length == 0) {
+//                System.out.println("文件夹是空的!");
+//                return;
+//            } else {
+//                for (File file2 : files) {
+//                    if (file2.isDirectory()) {
+//                        //System.out.println("文件夹:" + file2.getAbsolutePath());
+//                        getDataFromExcelFilePath(file2.getAbsolutePath());
+//                    } else {
+//                        System.out.println("文件:" + file2.getAbsolutePath());
+//                        if (file2.getName().indexOf(".xls") > 0) {
+//                            getDataFromExcelFile(file2.getAbsolutePath());
+//                            //System.out.println(f.getName());
+//                        }
+//                    }
+//                }
+//            }
+//        } else {
+//            System.out.println("文件不存在!");
+//        }
+        getFromPath(filePathFolder);
     }
 
     /**
@@ -238,9 +305,9 @@ public class GetExcelInfoFromOld {
             }
             flag++;//下一列
             System.out.println(shuLies.size());
-            if (shuLies.size() == 0) {//如果本列没有数据
-                continue;
-            }
+//            if (shuLies.size() == 0) {//如果本列没有数据
+//                continue;
+//            }
             dataSet.setPointNumber(shuLies.size());
             dataSet.setCreateTime(new Date());
             dataSet.setLastInsertTime(new Date());
@@ -249,7 +316,7 @@ public class GetExcelInfoFromOld {
             dataSet.setSetType(1);
             //持久化操作
             mongoDbService.insertAll(shuLies, "shulie");
-            boolean insert = dataSetService.insert(dataSet);
+            boolean insert = dataSetService.insert(dataSet) > 0;
             if (!insert) {//如果插入不成功
                 throw new RuntimeException("插入时出现错误");
             }

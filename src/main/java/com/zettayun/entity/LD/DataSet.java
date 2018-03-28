@@ -1,4 +1,4 @@
-package com.zettayun.entity;
+package com.zettayun.entity.LD;
 
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
@@ -26,7 +26,7 @@ public class DataSet extends Model<DataSet> {
      * 主键，自动增长
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
     /**
      * 数列名
      */
@@ -61,7 +61,6 @@ public class DataSet extends Model<DataSet> {
     /**
      * 统计方式
      */
-    @TableField("period")
     private String period;
     /**
      * 状态，0为未启用，1为启用
@@ -82,12 +81,14 @@ public class DataSet extends Model<DataSet> {
     @TableField("set_type")
     private Integer setType;
 
+    @TableField("set_code")
+    private String setCode;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -187,6 +188,14 @@ public class DataSet extends Model<DataSet> {
         this.setType = setType;
     }
 
+    public String getSetCode() {
+        return setCode;
+    }
+
+    public void setSetCode(String setCode) {
+        this.setCode = setCode;
+    }
+
     @Override
     protected Serializable pkVal() {
         return this.id;
@@ -195,19 +204,20 @@ public class DataSet extends Model<DataSet> {
     @Override
     public String toString() {
         return "DataSet{" +
-                ", id=" + id +
-                ", setName=" + setName +
+                "id=" + id +
+                ", setName='" + setName + '\'' +
                 ", pointNumber=" + pointNumber +
-                ", dataSource=" + dataSource +
+                ", dataSource='" + dataSource + '\'' +
                 ", createTime=" + createTime +
                 ", lastUpdateTime=" + lastUpdateTime +
                 ", lastInsertTime=" + lastInsertTime +
-                ", token=" + token +
-                ", period=" + period +
+                ", token='" + token + '\'' +
+                ", period='" + period + '\'' +
                 ", status=" + status +
-                ", valueUnit=" + valueUnit +
-                ", remark=" + remark +
+                ", valueUnit='" + valueUnit + '\'' +
+                ", remark='" + remark + '\'' +
                 ", setType=" + setType +
-                "}";
+                ", setCode='" + setCode + '\'' +
+                '}';
     }
 }

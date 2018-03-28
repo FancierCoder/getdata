@@ -1,22 +1,23 @@
-package com.zettayun.service;
+package com.zettayun.mongo;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zettayun.api.requestParamEntity.RequestValueSetByTime;
-import com.zettayun.entity.RShuLie;
-import com.zettayun.entity.ShuLie;
+
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Transactional
-public interface MongoDbService {
+public interface MongoDbService<T> {
     /**
      * 新增
      * <br>------------------------------<br>
      *
      * @param ShuLie
      */
-    void insert(ShuLie ShuLie, String collectionName);
+    void insert(T document, String collectionName);
 
     /**
      * 新增
@@ -24,7 +25,7 @@ public interface MongoDbService {
      *
      * @param ShuLie
      */
-    void save(ShuLie ShuLie, String collectionName);
+    void save(T document, String collectionName);
 
     /**
      * 新增
@@ -32,7 +33,7 @@ public interface MongoDbService {
      *
      * @param ShuLies
      */
-    void insertAll(List<ShuLie> ShuLies, String collectionName);
+    void insertAll(List<T> documents, String collectionName);
 
     /**
      * 删除,主键id, 如果主键的值为null,删除会失败
@@ -48,7 +49,7 @@ public interface MongoDbService {
      *
      * @param criteriaShuLie
      */
-    void delete(ShuLie criteriaShuLie, String collectionName);
+    void delete(T criteria, String collectionName);
 
     /**
      * 删除全部
@@ -62,7 +63,7 @@ public interface MongoDbService {
 ////     *
 ////     * @param ShuLie
 ////     */
-////    void updateById(ShuLie ShuLie, String collectionName);
+////    void updateById(ShuLie document, String collectionName);
 
     /**
      * 更新多条
@@ -71,7 +72,7 @@ public interface MongoDbService {
      * @param criteriaShuLie
      * @param ShuLie
      */
-    void update(ShuLie criteriaShuLie, ShuLie ShuLie, String collectionName);
+    void update(T criteria, T document, String collectionName);
 
     /**
      * 根据主键查询
@@ -80,7 +81,7 @@ public interface MongoDbService {
      * @param id
      * @return
      */
-    ShuLie findById(String id, String collectionName);
+    T findById(String id, String collectionName);
 
     /**
      * 根据条件查询出来后 在去修改
@@ -89,7 +90,7 @@ public interface MongoDbService {
      * @param criteriaShuLie 查询条件
      * @return
      */
-    List<ShuLie> findByCondition(ShuLie criteriaShuLie, String collectionName);
+    List<T> findByCondition(T criteria, String collectionName);
 
     /**
      * 查询全部
@@ -97,15 +98,7 @@ public interface MongoDbService {
      *
      * @return
      */
-    List<ShuLie> findAll(String collectionName);
-
-    /**
-     * 根据时间查询
-     * @param request
-     * @param collectionName
-     * @return
-     */
-    List<ShuLie> findByRequest(RequestValueSetByTime request, String collectionName);
+    List<T> findAll(String collectionName);
 
     /**
      * 按条件查询
@@ -116,8 +109,17 @@ public interface MongoDbService {
      * @param limit
      * @return
      */
-    List<RShuLie> findByConditionAndOrderBy(ShuLie criteriaShuLie, Integer skip, Integer limit, JSONObject sortSet, String collectionName);
+    List<T> findByConditionAndOrderBy(T criteria, Integer skip, Integer limit, JSONObject sortSet, String collectionName);
 
+    /**
+     * 根据时间查询
+     * @param request
+     * @param collectionName
+     * @return
+     */
+    List<T> findByRequest(RequestValueSetByTime request, String collectionName);
+
+    
     /**
      * 根据条件查询出来后 在去修改
      * <br>------------------------------<br>
@@ -126,7 +128,7 @@ public interface MongoDbService {
      * @param updateShuLie   修改的值对象
      * @return
      */
-    ShuLie findAndModify(ShuLie criteriaShuLie, ShuLie updateShuLie, String collectionName);
+    T findAndModify(T criteria, T update, String collectionName);
 
     /**
      * 查询出来后 删除
@@ -135,7 +137,7 @@ public interface MongoDbService {
      * @param criteriaShuLie
      * @return
      */
-    ShuLie findAndRemove(ShuLie criteriaShuLie, String collectionName);
+    T findAndRemove(T criteria, String collectionName);
 
     /**
      * count
@@ -144,7 +146,7 @@ public interface MongoDbService {
      * @param criteriaShuLie
      * @return
      */
-    long count(ShuLie criteriaShuLie, String collectionName);
+    long count(T criteria, String collectionName);
 
     /**
      * 是否存在collection
@@ -166,5 +168,5 @@ public interface MongoDbService {
      * @param filedNames
      * @return
      */
-    boolean createIndex(String collectionName ,List<String> filedNames);
+    boolean createIndex(String collectionName, List<String> filedNames);
 }

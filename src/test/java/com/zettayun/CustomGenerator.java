@@ -15,7 +15,7 @@
 //
 //        // 全局配置
 //        GlobalConfig gc = new GlobalConfig();
-//        gc.setOutputDir("D:\\liduo_profile\\source\\test");
+//        gc.setOutputDir("D:\\liduo_profile\\source\\ApiUtil");
 //        gc.setFileOverride(true);
 //        gc.setActiveRecord(true);
 //        gc.setEnableCache(false);// XML 二级缓存

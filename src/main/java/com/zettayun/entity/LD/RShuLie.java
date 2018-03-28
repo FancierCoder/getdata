@@ -1,26 +1,17 @@
-package com.zettayun.entity;
+package com.zettayun.entity.LD;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
-import java.util.Date;
 
-@ApiModel("数列信息")
-@Document
-public class ShuLie implements Serializable {
+public class RShuLie implements Serializable {
 
     //private String id;
 
-    @ApiModelProperty("token信息")
     private String token;
 
-    @ApiModelProperty("数据点的值")
     private Double value;
 
-    @ApiModelProperty("数据点的日期")
-    private Date date;
+    private Long date;
 
 //    public String getId() {
 //        return id;
@@ -46,11 +37,11 @@ public class ShuLie implements Serializable {
         this.value = value;
     }
 
-    public Date getDate() {
+    public Long getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(Long date) {
         this.date = date;
     }
 

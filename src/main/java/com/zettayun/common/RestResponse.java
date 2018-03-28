@@ -84,20 +84,19 @@ public class RestResponse<T> implements Serializable {
         this.result = result;
     }
 
-
-    public Integer getCode() {
+    public Integer getResultCode() {
         return resultCode;
     }
 
-    public void setCode(Integer resultCode) {
+    public void setResultCode(Integer resultCode) {
         this.resultCode = resultCode;
     }
 
-    public String getMessage() {
+    public String getResultMsg() {
         return resultMsg;
     }
 
-    public void setMessage(String resultMsg) {
+    public void setResultMsg(String resultMsg) {
         this.resultMsg = resultMsg;
     }
 

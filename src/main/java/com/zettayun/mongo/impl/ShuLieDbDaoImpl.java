@@ -1,26 +1,26 @@
-package com.zettayun.dao;
+package com.zettayun.mongo.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zettayun.api.requestParamEntity.RequestValueSetByTime;
-import com.zettayun.entity.ShuLie;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.zettayun.mongo.AbstractBaseMongoTemplate;
+import com.zettayun.mongo.MongoDbDao;
+import com.zettayun.entity.LD.ShuLie;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.index.TextIndexDefinition;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@Repository
-public class MongoDbDaoImpl implements MongoDbDao {
-    @Autowired
-    private MongoTemplate mongoTemplate;
+@Component
+public class ShuLieDbDaoImpl extends AbstractBaseMongoTemplate implements MongoDbDao<ShuLie> {
+//    @Autowired
+//    private MongoTemplate mongoTemplate;
 
     @Override
     //@Transactional
@@ -51,7 +51,7 @@ public class MongoDbDaoImpl implements MongoDbDao {
 
     @Override
     public void deleteAll(String collectionName) {
-        mongoTemplate.dropCollection(ShuLie.class);
+        mongoTemplate.dropCollection(collectionName);
     }
 
 //    @Override
@@ -71,33 +71,6 @@ public class MongoDbDaoImpl implements MongoDbDao {
                 .set("value", ShuLie.getValue())
                 .set("date", ShuLie.getDate());
         mongoTemplate.updateMulti(query, update, ShuLie.getClass(), collectionName);
-    }
-
-    public List<ShuLie> findByRequest(RequestValueSetByTime request, String collectionName){
-        ShuLie shuLie = new ShuLie();
-        shuLie.setToken(request.getToken());
-        Query query = getQuery(shuLie);
-        Criteria criteria = Criteria.where("date").lte(request.getEndTime()).gte(request.getStartTime());
-        query.addCriteria(criteria);
-        query.limit(request.getPageSize());
-        query.skip(request.getStartRow());
-        List<Sort.Order> orders = new ArrayList<>();
-        JSONObject sortSet = new JSONObject();
-        try {
-            sortSet = request.getSortSet();
-            Assert.notNull(sortSet, "sortSet为空");
-        } catch (Exception e) {
-
-        }
-        for (Map.Entry<String, Object> entry : sortSet.entrySet()) {
-            String key = entry.getKey();
-            Integer value = (Integer)entry.getValue();
-            Sort.Order order = new Sort.Order(value > 0 ? Sort.Direction.ASC : Sort.Direction.DESC, key);
-            orders.add(order);
-        }
-        if (orders.size() > 0)
-            query.with(new Sort(orders));
-        return mongoTemplate.find(query, ShuLie.class, collectionName);
     }
 
     @Override
@@ -144,7 +117,7 @@ public class MongoDbDaoImpl implements MongoDbDao {
         return mongoTemplate.count(query, collectionName);
     }
 
-    @Override
+    
     public List<ShuLie> findByConditionAndOrderBy(ShuLie criteriaShuLie, Integer skip, Integer limit, JSONObject sortSet, String collectionName) {
         Query query = getQuery(criteriaShuLie);
         List<Sort.Order> orders = new ArrayList<>();
@@ -159,9 +132,37 @@ public class MongoDbDaoImpl implements MongoDbDao {
             Sort.Order order = new Sort.Order(value > 0 ? Sort.Direction.ASC : Sort.Direction.DESC, key);
             orders.add(order);
         }
-        query.with(new Sort(orders));
+        if (orders.size() > 0)
+        	query.with(new Sort(orders));
         query.skip(skip);
         query.limit(limit);
+        return mongoTemplate.find(query, ShuLie.class, collectionName);
+    }
+    
+    public List<ShuLie> findByRequest(RequestValueSetByTime request, String collectionName){
+        ShuLie shuLie = new ShuLie();
+        shuLie.setToken(request.getToken());
+        Query query = getQuery(shuLie);
+        Criteria criteria = Criteria.where("date").lte(request.getEndTime()).gte(request.getStartTime());
+        query.addCriteria(criteria);
+        query.limit(request.getPageSize());
+        query.skip(request.getStartRow());
+        List<Sort.Order> orders = new ArrayList<>();
+        JSONObject sortSet = new JSONObject();
+        try {
+            sortSet = request.getSortSet();
+            Assert.notNull(sortSet, "sortSet为空");
+        } catch (Exception e) {
+
+        }
+        for (Map.Entry<String, Object> entry : sortSet.entrySet()) {
+            String key = entry.getKey();
+            Integer value = (Integer)entry.getValue();
+            Sort.Order order = new Sort.Order(value > 0 ? Sort.Direction.ASC : Sort.Direction.DESC, key);
+            orders.add(order);
+        }
+        if (orders.size() > 0)
+            query.with(new Sort(orders));
         return mongoTemplate.find(query, ShuLie.class, collectionName);
     }
 
@@ -186,8 +187,8 @@ public class MongoDbDaoImpl implements MongoDbDao {
                 TextIndexDefinition.TextIndexedFieldSpec fieldSpec = new TextIndexDefinition.TextIndexedFieldSpec(filedName);
                 index.addFieldSpec(fieldSpec);
             }
-            String s = mongoTemplate.indexOps(collectionName).ensureIndex(index);
-            System.out.println(s);
+            mongoTemplate.indexOps(collectionName).ensureIndex(index);
+            //System.out.println(s);
         } catch (Exception e) {
             return false;
         }
@@ -218,4 +219,16 @@ public class MongoDbDaoImpl implements MongoDbDao {
 
         return query;
     }
+
+	@Override
+	public void updateById(String id, ShuLie document, String collectionName) {
+		Query query = new Query();
+		Criteria criteria = Criteria.where("_id").is(id);
+		Update update = Update.update("token", document.getToken())
+                .set("value", document.getValue())
+                .set("date", document.getDate());
+		query.addCriteria(criteria);
+		mongoTemplate.updateFirst(query, update, collectionName);
+		
+	}
 }

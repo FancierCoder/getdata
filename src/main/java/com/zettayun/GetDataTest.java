@@ -5,13 +5,14 @@ import com.github.pagehelper.PageInfo;
 import com.zettayun.api.requestParamEntity.RequestData;
 import com.zettayun.api.requestParamEntity.RequestValueSetByTime;
 import com.zettayun.controller.SystemController;
+import com.zettayun.mongo.MongoDbService;
 import com.zettayun.entity.JobAndTrigger;
-import com.zettayun.entity.RShuLie;
-import com.zettayun.entity.ShuLie;
+import com.zettayun.entity.LD.RShuLie;
+import com.zettayun.entity.LD.ShuLie;
 import com.zettayun.job.JobControl;
 import com.zettayun.method.GetExcelInfo;
 import com.zettayun.method.GetExcelInfoFromOld;
-import com.zettayun.service.MongoDbService;
+import com.zettayun.util.ApiUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,7 +47,10 @@ public class GetDataTest {
 
     @Test
     public void test1() {
+        long l = System.currentTimeMillis();
         getExcelInfoFromOld.getDataFromExcelFilePath("D:\\liduo_profile\\证券市场");
+        long l1 = System.currentTimeMillis();
+        System.out.println(l1-l+"ms");
     }
 
     @Test
@@ -101,10 +105,10 @@ public class GetDataTest {
 
     @Test
     public void test7(){
-        boolean flag = mongoDbService.createCollection("test");
+        boolean flag = mongoDbService.createCollection("ApiUtil");
         ArrayList<String> list = new ArrayList<>();
         list.add("token");
-        boolean test = mongoDbService.createIndex("test", list);
+        boolean test = mongoDbService.createIndex("ApiUtil", list);
 
     }
 
@@ -129,4 +133,17 @@ public class GetDataTest {
         List<ShuLie> shulie = mongoDbService.findByRequest(setByTime, "shulie");
         System.out.println(Arrays.toString(shulie.toArray()));
     }
+
+    @Test
+    public void test10(){
+        String host = "http://localhost:8081/system/query/queryValueSet";
+        String data = "{\"token\":\"string\",\"setType\":1,\"startRow\":0,\"pageSize\":9,\"sortSet\":{\"value\":1}}";
+        boolean b = ApiUtil.importData(host, data);
+    }
+
+    @Test
+    public void test11() {
+        getExcelInfoFromOld.getDataFromExcelFile("D:\\liduo_profile\\证券市场\\股票市场\\DA股总计：交易家数.xlsx");
+    }
+
 }

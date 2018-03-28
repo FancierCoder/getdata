@@ -1,32 +1,207 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.zettayun.dao.DataSetDao">
-
-    <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.zettayun.entity.DataSet">
-        <id column="id" property="id"/>
-        <result column="set_name" property="setName"/>
-        <result column="point_number" property="pointNumber"/>
-        <result column="data_source" property="dataSource"/>
-        <result column="create_time" property="createTime"/>
-        <result column="last_update_time" property="lastUpdateTime"/>
-        <result column="last_insert_time" property="lastInsertTime"/>
-        <result column="token" property="token"/>
-        <result column="period" property="period"/>
-        <result column="status" property="status"/>
-        <result column="value_unit" property="valueUnit"/>
-        <result column="remark" property="remark"/>
-        <result column="set_type" property="setType"/>
-    </resultMap>
-
-    <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        id, set_name AS setName, point_number AS pointNumber, data_source AS dataSource, create_time AS createTime,
-        last_update_time AS lastUpdateTime, last_insert_time AS lastInsertTime, token, period, status, value_unit AS
-        valueUnit, remark, set_type AS setType
-    </sql>
-    <select id="selectByToken" resultType="com.zettayun.entity.DataSet">
-        SELECT * FROM data_set WHERE token = #{token}
-    </select>
-
+<mapper namespace="com.zettayun.dao.LD.DataSetMapper">
+  <resultMap id="BaseResultMap" type="com.zettayun.entity.LD.DataSet">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="set_name" jdbcType="VARCHAR" property="setName" />
+    <result column="point_number" jdbcType="INTEGER" property="pointNumber" />
+    <result column="data_source" jdbcType="VARCHAR" property="dataSource" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="last_update_time" jdbcType="TIMESTAMP" property="lastUpdateTime" />
+    <result column="last_insert_time" jdbcType="TIMESTAMP" property="lastInsertTime" />
+    <result column="token" jdbcType="VARCHAR" property="token" />
+    <result column="period" jdbcType="VARCHAR" property="period" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="value_unit" jdbcType="VARCHAR" property="valueUnit" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="set_type" jdbcType="INTEGER" property="setType" />
+    <result column="set_code" jdbcType="VARCHAR" property="setCode" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, set_name, point_number, data_source, create_time, last_update_time, last_insert_time, 
+    token, period, status, value_unit, remark, set_type, set_code
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from data_set
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from data_set
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.zettayun.entity.LD.DataSet">
+    insert into data_set (id, set_name, point_number, 
+      data_source, create_time, last_update_time, 
+      last_insert_time, token, period, 
+      status, value_unit, remark, 
+      set_type, set_code)
+    values (#{id,jdbcType=BIGINT}, #{setName,jdbcType=VARCHAR}, #{pointNumber,jdbcType=INTEGER}, 
+      #{dataSource,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{lastUpdateTime,jdbcType=TIMESTAMP}, 
+      #{lastInsertTime,jdbcType=TIMESTAMP}, #{token,jdbcType=VARCHAR}, #{period,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER}, #{valueUnit,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{setType,jdbcType=INTEGER}, #{setCode,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zettayun.entity.LD.DataSet">
+    insert into data_set
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="setName != null">
+        set_name,
+      </if>
+      <if test="pointNumber != null">
+        point_number,
+      </if>
+      <if test="dataSource != null">
+        data_source,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="lastUpdateTime != null">
+        last_update_time,
+      </if>
+      <if test="lastInsertTime != null">
+        last_insert_time,
+      </if>
+      <if test="token != null">
+        token,
+      </if>
+      <if test="period != null">
+        period,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="valueUnit != null">
+        value_unit,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="setType != null">
+        set_type,
+      </if>
+      <if test="setCode != null">
+        set_code,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="setName != null">
+        #{setName,jdbcType=VARCHAR},
+      </if>
+      <if test="pointNumber != null">
+        #{pointNumber,jdbcType=INTEGER},
+      </if>
+      <if test="dataSource != null">
+        #{dataSource,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastUpdateTime != null">
+        #{lastUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastInsertTime != null">
+        #{lastInsertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="token != null">
+        #{token,jdbcType=VARCHAR},
+      </if>
+      <if test="period != null">
+        #{period,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="valueUnit != null">
+        #{valueUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="setType != null">
+        #{setType,jdbcType=INTEGER},
+      </if>
+      <if test="setCode != null">
+        #{set_code,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zettayun.entity.LD.DataSet">
+    update data_set
+    <set>
+      <if test="setName != null">
+        set_name = #{setName,jdbcType=VARCHAR},
+      </if>
+      <if test="pointNumber != null">
+        point_number = #{pointNumber,jdbcType=INTEGER},
+      </if>
+      <if test="dataSource != null">
+        data_source = #{dataSource,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastUpdateTime != null">
+        last_update_time = #{lastUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastInsertTime != null">
+        last_insert_time = #{lastInsertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="token != null">
+        token = #{token,jdbcType=VARCHAR},
+      </if>
+      <if test="period != null">
+        period = #{period,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="valueUnit != null">
+        value_unit = #{valueUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="setType != null">
+        set_type = #{setType,jdbcType=INTEGER},
+      </if>
+      <if test="setCode != null">
+        set_code = #{set_code,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zettayun.entity.LD.DataSet">
+    update data_set
+    set set_name = #{setName,jdbcType=VARCHAR},
+      point_number = #{pointNumber,jdbcType=INTEGER},
+      data_source = #{dataSource,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      last_update_time = #{lastUpdateTime,jdbcType=TIMESTAMP},
+      last_insert_time = #{lastInsertTime,jdbcType=TIMESTAMP},
+      token = #{token,jdbcType=VARCHAR},
+      period = #{period,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      value_unit = #{valueUnit,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      set_type = #{setType,jdbcType=INTEGER},
+      set_code = #{set_code,jdbcType=VARCHAR},
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="selectByToken" resultType="com.zettayun.entity.LD.DataSet">
+        SELECT <include refid="Base_Column_List" /> FROM data_set WHERE token = #{token}
+   </select>
+   
+   <select id="selectListBySetName" resultMap="BaseResultMap" parameterType="java.lang.String">
+   		SELECT <include refid="Base_Column_List" /> FROM data_set WHERE set_name like #{areaName}
+   </select> 
 </mapper>

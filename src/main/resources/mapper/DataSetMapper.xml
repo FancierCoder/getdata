@@ -130,7 +130,7 @@
         #{setType,jdbcType=INTEGER},
       </if>
       <if test="setCode != null">
-        #{set_code,jdbcType=VARCHAR},
+        #{setCode,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -174,7 +174,7 @@
         set_type = #{setType,jdbcType=INTEGER},
       </if>
       <if test="setCode != null">
-        set_code = #{set_code,jdbcType=VARCHAR},
+        set_code = #{set_code,jdbcType=VARCHAR}
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -193,7 +193,7 @@
       value_unit = #{valueUnit,jdbcType=VARCHAR},
       remark = #{remark,jdbcType=VARCHAR},
       set_type = #{setType,jdbcType=INTEGER},
-      set_code = #{set_code,jdbcType=VARCHAR},
+      set_code = #{setCode,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
   

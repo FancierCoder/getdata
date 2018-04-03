@@ -76,36 +76,40 @@ public class GetExcelInfo {
     @SuppressWarnings("deprecation")
     private Object getRightTypeCell(Cell cell) {
         Object object = null;
-        switch (cell.getCellType()) {
-            case Cell.CELL_TYPE_STRING: {
-                object = cell.getStringCellValue();
-                break;
-            }
-            case Cell.CELL_TYPE_NUMERIC: {
-                if (HSSFDateUtil.isCellDateFormatted(cell)) {// 处理日期格式、时间格式
-                    SimpleDateFormat sdf;
-                    if (cell.getCellStyle().getDataFormat() == HSSFDataFormat
-                            .getBuiltinFormat("h:mm")) {
-                        sdf = new SimpleDateFormat("HH:mm");
-                    } else {// 日期
-                        sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    }
-                    Date date = cell.getDateCellValue();
-                    object = sdf.format(date);
-                } else {
-                    object = cell.getNumericCellValue();
+        try {
+            switch (cell.getCellType()) {
+                case Cell.CELL_TYPE_STRING: {
+                    object = cell.getStringCellValue();
+                    break;
                 }
-                break;
+                case Cell.CELL_TYPE_NUMERIC: {
+                    if (HSSFDateUtil.isCellDateFormatted(cell)) {// 处理日期格式、时间格式
+                        SimpleDateFormat sdf;
+                        if (cell.getCellStyle().getDataFormat() == HSSFDataFormat
+                                .getBuiltinFormat("h:mm")) {
+                            sdf = new SimpleDateFormat("HH:mm");
+                        } else {// 日期
+                            sdf = new SimpleDateFormat("yyyy-MM-dd");
+                        }
+                        Date date = cell.getDateCellValue();
+                        object = sdf.format(date);
+                    } else {
+                        object = cell.getNumericCellValue();
+                    }
+                    break;
+                }
+                case Cell.CELL_TYPE_FORMULA: {
+                    cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+                    object = cell.getNumericCellValue();
+                    break;
+                }
+                case Cell.CELL_TYPE_BLANK: {
+                    object = cell.getStringCellValue();
+                    break;
+                }
             }
-            case Cell.CELL_TYPE_FORMULA: {
-                cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-                object = cell.getNumericCellValue();
-                break;
-            }
-            case Cell.CELL_TYPE_BLANK: {
-                object = cell.getStringCellValue();
-                break;
-            }
+        } catch (Exception e) {
+            object = "";
         }
         return object;
     }
@@ -164,6 +168,7 @@ public class GetExcelInfo {
         // ----------------这里根据你的表格有多少列
         while (flag < rowHead.getPhysicalNumberOfCells()) {
             String token = UUID.randomUUID().toString().replaceAll("-", "");
+            String setCode = UUID.randomUUID().toString().replaceAll("-", "").substring(0,8);
             DataSet dataSet = new DataSet();
             //Cell cell = rowHead.getCell(flag);
             int totalRowNum = sheet.getLastRowNum();
@@ -228,8 +233,10 @@ public class GetExcelInfo {
                 shuLie.setToken(token);
                 if (!(getRightTypeCell(cell) == ""))//如果有值
                     shuLie.setValue(Double.valueOf(getRightTypeCell(cell).toString()));
-                else
-                    continue;
+                else{
+                    shuLie.setValue((double) 0);
+                }
+                    //continue;
                 SimpleDateFormat format =
                         new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置时区为格林尼治时间，处理mongodb时间减8个小时的错误
                 format.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
@@ -244,22 +251,23 @@ public class GetExcelInfo {
             }
             flag++;//下一列
             System.out.println(shuLies.size());
-            if (shuLies.size() == 0) {//如果本列没有数据
-                continue;
-            }
+//            if (shuLies.size() == 0) {//如果本列没有数据
+//                continue;
+//            }
             dataSet.setPointNumber(shuLies.size());
             dataSet.setCreateTime(new Date());
             dataSet.setLastInsertTime(new Date());
             dataSet.setToken(token);
             dataSet.setStatus(1);
             dataSet.setSetType(1);
+            dataSet.setSetCode(setCode);
             //持久化操作
-           /* mongoDbService.insertAll(shuLies, "shulie");
+            mongoDbService.insertAll(shuLies, "shulie");
             boolean insert = dataSetService.insert(dataSet) > 0;
             if (!insert) {//如果插入不成功
                 throw new RuntimeException("插入时出现错误");
-            }*/
-            packageData(shuLies, dataSet);
+            }
+            //packageData(shuLies, dataSet);
             //int i = 1 / 0;//制造错误，测试是否回滚
             System.out.println(dataSet);
 
@@ -298,7 +306,7 @@ public class GetExcelInfo {
 
         try {
             boolean b = ApiUtil.importData("http://localhost:8081/system/modify/importValueSetBatches", valueSets.getJSONObject("request").toJSONString());
-            if (b)
+            if (!b)
                 throw new RuntimeException("插入时出现错误");
         } catch (Exception e) {
             e.printStackTrace();

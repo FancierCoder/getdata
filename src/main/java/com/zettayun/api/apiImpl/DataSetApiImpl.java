@@ -106,12 +106,20 @@ public class DataSetApiImpl implements DataSetApi {
             long insertedCount = 0;
             ArrayList<ShuLie> lies = new ArrayList<>();
             ArrayList<DataSet> sets = new ArrayList<>();
+            HashMap<String, DataSet> hashMap = new HashMap<>();
             for (Set requestValueSet : shuLies){
                 ShuLie shuLie = new ShuLie();
                 shuLie.setToken(requestValueSet.getToken());
                 shuLie.setDate(requestValueSet.getDate());
                 shuLie.setValue(Double.valueOf(requestValueSet.getValue().toString()));
-                DataSet dataSet = dataSetService.selectByToken(shuLie.getToken());
+                DataSet set = hashMap.get(shuLie.getToken());
+                DataSet dataSet ;
+                if (set == null) {
+                    dataSet = dataSetService.selectByToken(shuLie.getToken());
+                    hashMap.put(shuLie.getToken(), dataSet);
+                }
+                else
+                    dataSet = set;
                 if (isReplace == 1) {
                     long count;
                     ShuLie criteria = new ShuLie();

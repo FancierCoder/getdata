@@ -48,14 +48,14 @@ public class GetDataTest {
     @Test
     public void test1() {
         long l = System.currentTimeMillis();
-        getExcelInfoFromOld.getDataFromExcelFilePath("D:\\liduo_profile\\证券市场");
+        getExcelInfoFromOld.getDataFromExcelFilePath("D:\\LDprofile\\证券市场");
         long l1 = System.currentTimeMillis();
         System.out.println(l1-l+"ms");
     }
 
     @Test
     public void test2() {
-        getExcelInfo.getDataFromExcelFile("D:\\liduo_profile\\电力电量完成情况（月）.xlsx");
+        getExcelInfo.getDataFromExcelFile("D:\\LDprofile\\华东.xlsx");
     }
 
     @Test
